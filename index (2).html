@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>퇴원기록지 도우미 v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0b0f17;
+    --bg2: #0f1623;
+    --bg3: #141d30;
+    --card: #161f33;
+    --card-hover: #1a2540;
+    --border: #1e2d4a;
+    --border2: #253652;
+    --accent: #4d9eff;
+    --accent2: #185FA5;
+    --accent-soft: rgba(77, 158, 255, 0.12);
+    --green: #00d97e;
+    --red: #ff4d6a;
+    --yellow: #ffc14d;
+    --orange: #ff8a3d;
+    --text: #e5edff;
+    --text2: #8da3c7;
+    --text3: #5d7090;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Noto Sans KR', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.5; }
+  body { padding: 12px 12px 100px 12px; max-width: 760px; margin: 0 auto; min-height: 100vh; }
+  .header { display: flex; align-items: baseline; justify-content: space-between; padding: 8px 4px 14px 4px; }
+  .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 6px; }
+  .header .sub { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+  .section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 6px 4px; font-weight: 600; }
+  .cats { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; scrollbar-width: none; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat { flex-shrink: 0; padding: 8px 14px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: var(--sans); white-space: nowrap; }
+  .cat:hover { background: var(--card); color: var(--text); }
+  .cat.active { background: var(--accent2); color: #fff; border-color: var(--accent2); font-weight: 500; }
+  .diseases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+  .disease { padding: 10px 10px; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: left; }
+  .disease:hover { background: var(--card-hover); border-color: var(--border2); }
+  .disease.active { background: var(--accent-soft); border-color: var(--accent); }
+  .disease .dko { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+  .disease .den { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; }
+  .form { margin-top: 16px; }
+  .field { margin-bottom: 14px; }
+  .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; font-weight: 600; padding: 0 4px; gap: 8px; }
+  .field-label .hint { font-size: 10px; color: var(--text3); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .field-label .reset-btn { background: transparent; border: 0.5px solid var(--border); color: var(--text3); font-size: 10px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-family: var(--sans); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .field-label .reset-btn:hover { color: var(--text2); border-color: var(--border2); }
+  input[type="text"], textarea { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--text); font-family: var(--sans); resize: vertical; line-height: 1.6; transition: border 0.15s; }
+  input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--bg3); }
+  textarea { min-height: 110px; }
+  textarea.narrative { min-height: 130px; line-height: 1.65; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 2px 0; }
+  .chip { padding: 6px 11px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; user-select: none; transition: all 0.12s; font-family: var(--sans); line-height: 1.35; }
+  .chip:hover { color: var(--text); border-color: var(--border2); }
+  .chip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .chip.warn.on { background: rgba(255, 77, 106, 0.12); color: var(--red); border-color: var(--red); }
+  .chip.tx.on { background: rgba(255, 193, 77, 0.12); color: var(--yellow); border-color: var(--yellow); }
+  .chip.rx.on { background: rgba(0, 217, 126, 0.10); color: var(--green); border-color: var(--green); }
+  .chip .x { color: var(--text3); margin-right: 4px; }
+  .bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 12px 12px 12px; background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 8px; max-width: 760px; margin: 0 auto; z-index: 10; }
+  .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--sans); letter-spacing: -0.01em; transition: all 0.15s; }
+  .btn-primary { background: var(--accent2); color: #fff; }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary { background: var(--card); color: var(--text2); border: 0.5px solid var(--border); flex: 0 0 100px; }
+  .btn-secondary:hover { color: var(--text); background: var(--card-hover); }
+  .toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--green); color: #042918; padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 217, 126, 0.3); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
+  .empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; }
+  .empty .e-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.5; }
+  .dx-card { background: linear-gradient(135deg, var(--accent-soft), transparent); border: 0.5px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .dx-card .dx-ko { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .dx-card .dx-en { font-size: 12px; color: var(--text2); font-family: var(--mono); }
+  .dx-card .dx-icd { display: inline-block; font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--mono); font-weight: 500; }
+  .add-row { display: flex; gap: 6px; margin-top: 6px; }
+  .add-row input { flex: 1; font-size: 12px; padding: 6px 10px; }
+  .add-row button { background: var(--accent2); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
+  .preview { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.65; max-height: 320px; overflow-y: auto; }
+  .warn-note { background: rgba(255, 77, 106, 0.08); border-left: 3px solid var(--red); color: var(--text2); font-size: 11px; padding: 8px 10px; border-radius: 4px; margin-bottom: 6px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>퇴원기록지 도우미 <span class="ver">v2.0</span></h1>
+  <span class="sub" id="time-now"></span>
+</div>
+
+<div class="section-label">대분류</div>
+<div class="cats" id="cats"></div>
+
+<div class="section-label">진단 선택</div>
+<div class="diseases" id="diseases"></div>
+
+<div id="form-area" class="form"></div>
+
+<div class="bottom">
+  <button class="btn btn-secondary" onclick="resetAll()">초기화</button>
+  <button class="btn btn-primary" onclick="copyText()">복사</button>
+</div>
+
+<div class="toast" id="toast">✓ 복사되었습니다</div>
+
+<script>
+// ============================================================
+// 데이터: 응급실 호발 질환별 퇴원기록 템플릿
+// 처방은 성분명(영문) 우선, 응급실 처치는 결정 위주
+// 진료 경과는 의료법적 방어 가능한 수준의 narrative
+// 재내원 주의사항은 적색기 + 시간 기준 + 119 명시
+// ============================================================
+const DATA = {
+  resp: {
+    name: '🫁 호흡기/감염',
+    diseases: [
+      {
+        id: 'uri', ko: '급성 상기도 감염', en: 'Acute upper respiratory infection', icd: 'J06.9',
+        tests: [
+          'Chest PA: No active lesion',
+          'SARS-CoV-2 Ag: Negative',
+          'Influenza A/B Ag: Negative',
+          'CBC, CRP: WNL'
+        ],
+        decisions: [
+          '해열진통제 IV (Acetaminophen 1g)',
+          'NSAID IV (Ketorolac 30mg)',
+          '수액 처치 (Hartmann 500mL IV)',
+          'Nebulizer (β2-agonist) 적용'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적인 상태로 평가되었으며, 진찰상 상기도 점막 발적 외 특이 소견 없었습니다. SARS-CoV-2 및 Influenza A/B 신속 항원 검사 음성이었고, 흉부 X-ray상 폐 실질 침윤 등 활동성 병변 보이지 않아 폐렴 등 하기도 감염 가능성은 낮다고 판단되었습니다. 응급실에서 해열진통제 투여 후 증상 일부 호전되어, 경구 대증요법 약제 처방과 함께 귀가 조치하였습니다. 활력징후 안정적이며 호흡곤란 소견 없음을 확인하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '브롬헥신(Bromhexine) 8mg PO 1T tid pc',
+          '암브록솔(Ambroxol) 30mg PO 1T tid pc',
+          '레보드로프로피진(Levodropropizine) syr 10mL PO tid',
+          '세티리진(Cetirizine) 10mg PO 1T qd hs',
+          '슈도에페드린(Pseudoephedrine) 60mg PO 1T tid pc'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 7일 이상 증상 지속, 발열 악화, 또는 새로운 증상 발생 시 가까운 내과 외래 방문 권유.',
+        warn: [
+          '38.5℃ 이상의 고열이 3일 이상 지속되거나 39℃ 초과하는 경우',
+          '호흡곤란, 숨이 차거나 가슴이 답답한 증상',
+          '가슴 통증, 특히 깊은 숨을 쉴 때 악화되는 통증',
+          '객혈(피가 섞인 가래) 또는 다량의 농성 가래',
+          '의식 변화, 심한 두통과 함께 목이 뻣뻣함 (뇌수막염 의심)',
+          '입술이나 손/발끝의 청색증',
+          '증상이 7일 이상 지속되거나 일시 호전 후 다시 악화되는 경우 (이차 세균 감염 의심)',
+          '소변량의 현저한 감소, 입마름, 어지러움 (탈수)',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'tonsil', ko: '급성 인후염/편도염', en: 'Acute pharyngotonsillitis', icd: 'J03.9',
+        tests: [
+          'Chest PA: No active lesion',
+          'CBC: WBC mild leukocytosis / WNL',
+          'CRP: Mildly elevated / WNL',
+          'Strep rapid test: Negative (시행 시)',
+          'SARS-CoV-2 Ag: Negative'
+        ],
+        decisions: [
+          '해열진통제 IV (Acetaminophen 1g)',
+          'NSAID IV (Ketorolac 30mg)',
+          '수액 처치 (NS 1L IV)',
+          'Dexamethasone IV (10mg, 심한 부종 시)',
+          '항생제 IV 1st dose (Ceftriaxone 1-2g)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적인 상태로 평가되었으며, 진찰상 편도 발적 및 종대, 인후 점막 발적 확인되었습니다. 호흡곤란, 침을 삼키지 못할 정도의 부종, 경부 농양 의심 소견 등 응급 처치가 필요한 상기도 폐쇄 소견은 보이지 않았습니다. 정맥 해열진통제 투여 후 증상 호전되어 경구 항생제 및 대증요법 처방과 함께 귀가 조치하였으며, 충분한 수분 섭취 및 안정 권유하였습니다.',
+        rx: [
+          '아목시실린/클라불라네이트(Amoxicillin/Clavulanate) 625mg PO 1T tid pc × 7d',
+          '세팔렉신(Cephalexin) 500mg PO 1T qid × 7d (페니실린 알레르기 시)',
+          '클래리트로마이신(Clarithromycin) 500mg PO 1T bid × 7d (페니실린 알레르기 시)',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '벤지다민(Benzydamine) 가글액 1일 4-6회 가글'
+        ],
+        fu: '항생제 복용 후 3-5일 내 증상 미호전 또는 악화 시 이비인후과 외래 방문. 증상 호전 시 추가 진료 불필요(단, 항생제는 7일간 완복 권유).',
+        warn: [
+          '39℃ 이상 고열이 항생제 복용 후 48시간 이상 지속되는 경우',
+          '침을 삼킬 수 없을 정도의 심한 통증, 또는 침을 흘리게 되는 경우',
+          '입을 잘 벌리지 못함 (trismus, 편도주위농양 의심)',
+          '호흡곤란, 천명음, 또는 목소리가 잠기는 변화',
+          '경부 한쪽이 부풀어 오르거나 만졌을 때 심한 통증',
+          '음식이나 물 섭취가 전혀 불가능한 경우',
+          '의식 변화 또는 극심한 무기력',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'bronchitis', ko: '급성 기관지염', en: 'Acute bronchitis', icd: 'J20.9',
+        tests: [
+          'Chest PA: No active lesion',
+          'CBC, CRP: WNL',
+          'SpO2: 95% 이상',
+          'SARS-CoV-2 Ag: Negative',
+          'Influenza A/B Ag: Negative'
+        ],
+        decisions: [
+          'Nebulizer (Salbutamol + Ipratropium)',
+          '해열진통제 IV (Acetaminophen 1g)',
+          'Dexamethasone IV (5mg)',
+          '수액 처치 (NS 500mL IV)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며 SpO2 정상 범위 유지되었습니다. 진찰상 양측 폐 청진 wheezing/rhonchi 청취되었고, 흉부 X-ray상 폐렴 등 폐 실질 침윤 소견 보이지 않았습니다. Nebulizer 적용 후 호흡음 호전, 호흡곤란 완화 확인되었으며, 경구 약제 처방과 함께 귀가 조치하였습니다. 퇴원 시 SpO2 정상이며 호흡곤란 호소 없음을 확인하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '브롬헥신(Bromhexine) 8mg PO 1T tid pc',
+          '암브록솔(Ambroxol) 30mg PO 1T tid pc',
+          '레보드로프로피진(Levodropropizine) syr 10mL PO tid',
+          '몬테루카스트(Montelukast) 10mg PO 1T qd hs',
+          'Salbutamol 흡입기 1-2puff inhalation tid prn',
+          'Budesonide/Formoterol 흡입기 1puff inhalation bid (천식 이력 시)',
+          '코데인(Codeine) 10mg PO 1T tid prn (지속되는 마른기침)'
+        ],
+        fu: '증상 지속/악화 시 호흡기내과 외래 방문. 1주일 이상 기침 지속 시 흉부 영상 재평가 권유.',
+        warn: [
+          '호흡곤란이 악화되거나 안정 시에도 숨이 찬 경우',
+          '입술이나 손/발끝의 청색증',
+          '38.5℃ 이상 고열이 새로 발생하거나 지속되는 경우',
+          '가슴 통증, 특히 흉부 압박감이나 짓누르는 통증',
+          '객혈(피가 섞인 가래) 또는 다량의 농성 가래',
+          '의식 변화 또는 극심한 무기력',
+          '심한 천명음이나 호흡 시 쌕쌕거림이 악화',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'flu', ko: '인플루엔자', en: 'Influenza', icd: 'J11.1',
+        tests: [
+          'Influenza A/B Ag: Positive',
+          'SARS-CoV-2 Ag: Negative',
+          'Chest PA: No active lesion',
+          'CBC: WNL / Mild leukopenia',
+          'SpO2: 95% 이상'
+        ],
+        decisions: [
+          '해열진통제 IV (Acetaminophen 1g)',
+          'NSAID IV (Ketorolac 30mg)',
+          '수액 처치 (NS 1L IV)',
+          '항바이러스제 처방 (Oseltamivir)'
+        ],
+        narrative: '환자는 응급실 내원 후 Influenza 신속 항원 검사 양성으로 확인되었으며, 흉부 X-ray상 폐 실질 침윤 등 폐렴 합병 소견 보이지 않았습니다. 활력징후 및 SpO2 안정적이며 호흡곤란 호소 없음을 확인하였고, 정맥 해열진통제 및 수액 투여 후 증상 일부 호전되었습니다. 항바이러스제 및 대증요법 약제 처방과 함께 자가 격리 및 충분한 휴식 권유 후 귀가 조치하였습니다.',
+        rx: [
+          '오셀타미비르(Oseltamivir) 75mg PO 1T bid × 5d',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '브롬헥신(Bromhexine) 8mg PO 1T tid pc',
+          '레보드로프로피진(Levodropropizine) syr 10mL PO tid'
+        ],
+        fu: '항바이러스제 5일간 완복 권유. 증상 호전 시 추가 진료 불필요. 발열 5일 이상 지속, 호흡곤란, 또는 새로운 증상 발생 시 즉시 내원.',
+        warn: [
+          '호흡곤란이 새로 발생하거나 악화되는 경우',
+          '38.5℃ 이상 고열이 5일 이상 지속되거나 일시 호전 후 다시 악화 (이차 세균 감염/폐렴 의심)',
+          '가슴 통증 또는 흉부 압박감',
+          '의식 변화, 심한 두통, 또는 극심한 무기력',
+          '음식이나 물 섭취가 전혀 불가능한 경우',
+          '입술이나 손/발끝의 청색증',
+          '소아의 경우: 호흡이 빠르거나 가슴이 함몰될 정도로 힘들어 보일 때, 충분한 수분 섭취 못할 때, 깨워도 잘 반응 없을 때',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'pneumonia', ko: '폐렴 (외래 치료)', en: 'Community-acquired pneumonia (low risk)', icd: 'J18.9',
+        tests: [
+          'Chest PA: Patchy infiltration (+)',
+          'CBC: Leukocytosis',
+          'CRP: Elevated',
+          'SpO2: 95% 이상',
+          'CURB-65 score: 0-1 (low risk)',
+          'BUN/Cr: WNL'
+        ],
+        decisions: [
+          '항생제 IV 1st dose (Ceftriaxone 1-2g)',
+          '항생제 IV 1st dose (Levofloxacin 750mg)',
+          '해열진통제 IV (Acetaminophen 1g)',
+          '수액 처치 (NS 1L IV)',
+          'Nebulizer (β2-agonist)'
+        ],
+        narrative: '환자는 응급실 내원 후 흉부 X-ray상 폐 실질 침윤 소견 확인되어 지역사회 획득 폐렴으로 진단되었습니다. SpO2 정상, 활력징후 안정적이며 CURB-65 score 0-1점으로 외래 항생제 치료 가능한 저위험군으로 평가되었습니다. 응급실에서 항생제 1차 정맥 투여 및 해열진통제, 수액 처치 시행 후 증상 일부 호전되었으며, 경구 항생제 및 대증요법 약제 처방과 함께 귀가 조치하였습니다. 환자 및 보호자에게 증상 악화 시 즉시 재내원 필요함을 설명하였고, 2-3일 내 외래 추적 관찰 계획 안내하였습니다.',
+        rx: [
+          '아목시실린/클라불라네이트(Amoxicillin/Clavulanate) 625mg PO 1T tid pc × 7d',
+          '레보플록사신(Levofloxacin) 750mg PO 1T qd × 5d',
+          '아지트로마이신(Azithromycin) 500mg PO 1T qd × 3d',
+          '클래리트로마이신(Clarithromycin) 500mg PO 1T bid × 7d',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '브롬헥신(Bromhexine) 8mg PO 1T tid pc',
+          '암브록솔(Ambroxol) 30mg PO 1T tid pc'
+        ],
+        fu: '2-3일 내 호흡기내과 외래 방문하여 임상 경과 평가 필요. 항생제는 처방대로 완복 권유. 증상 악화 시 즉시 응급실 재내원.',
+        warn: [
+          '호흡곤란이 악화되거나 안정 시에도 숨이 찬 경우',
+          '입술/얼굴/손발의 청색증',
+          'SpO2 측정기가 있다면 94% 미만',
+          '38.5℃ 이상 고열이 항생제 복용 후 48-72시간 이상 지속',
+          '가슴 통증이 새로 발생하거나 악화되는 경우',
+          '객혈(피가 섞인 가래) 발생',
+          '의식 변화, 졸음, 혼동 (특히 노인의 경우)',
+          '식사나 수분 섭취가 불가능하거나 소변량 현저히 감소',
+          '실신 또는 어지러움이 심함',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  gi: {
+    name: '🍽 소화기',
+    diseases: [
+      {
+        id: 'age', ko: '급성 위장염', en: 'Acute gastroenteritis', icd: 'A09',
+        tests: [
+          'CBC, CRP: WNL',
+          'Electrolyte(Na/K/Cl): WNL',
+          'BUN/Cr: WNL',
+          'Lipase/Amylase: WNL',
+          '복부 X-ray(KUB): 특이 소견 없음',
+          'Urinalysis: WNL'
+        ],
+        decisions: [
+          '수액 처치 (NS 1L IV)',
+          '수액 처치 (Hartmann 1L IV)',
+          '제토제 IV (Metoclopramide 10mg)',
+          '제토제 IV (Ondansetron 4mg)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          'NSAID IV (Ketorolac 30mg)',
+          'PPI IV (Esomeprazole 40mg)',
+          '응급실 경과 관찰 (4-6시간)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적인 상태로 평가되었고, 진찰상 복부 압통 외 반발통, 강직 등 외과적 응급 질환을 시사하는 소견은 관찰되지 않았습니다. 시행한 혈액검사상 전해질 이상 없으며 췌장염, 충수염 등을 시사하는 검사 소견 보이지 않았고, 복부 영상검사상 장폐색, free air 등 특이 소견 없었습니다. 수액 및 제토제 정맥 투여 후 구토/오심/복통 증상 호전되어 경구 수분 섭취 시도 가능한 상태로 회복되었으며, 탈수 소견 없고 활력징후 안정적임을 재확인 후 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '스멕타이트(Smectite) 1포 PO tid',
+          '메토클로프라미드(Metoclopramide) 10mg PO 1T tid ac prn',
+          '돔페리돈(Domperidone) 10mg PO 1T tid ac prn',
+          '부틸스코폴라민(Butylscopolamine) 10mg PO 1T tid prn',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '정장제(Probiotics) 1포 PO bid',
+          '로페라마이드(Loperamide) 2mg PO 1T prn (최대 4T/day, 혈변/고열 없을 때만)',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn'
+        ],
+        fu: '경구 수분 섭취 충분히 권유, 1-2일 미음/죽 위주 식이. 증상 호전 시 추가 진료 불필요. 증상 5일 이상 지속 또는 악화 시 내과 외래 방문.',
+        warn: [
+          '24시간 이상 지속되는 구토로 물조차 마실 수 없는 경우',
+          '혈변, 검은색 변(흑색변), 또는 다량의 출혈',
+          '38.5℃ 이상의 고열이 48시간 이상 지속되거나 39℃를 초과',
+          '진통제로 조절되지 않는 심한 복통',
+          '복통이 우하복부 한 곳에 국한되거나 점진적으로 악화 (충수염 의심)',
+          '복부가 단단해지거나 만지면 매우 아프고 움직일 수 없을 정도',
+          '탈수 증상: 소변량의 현저한 감소(8시간 이상 무뇨), 입마름, 어지러움, 기립 시 어지러움, 식은땀',
+          '의식 변화, 졸음, 또는 반응이 둔해짐 (특히 소아 및 노인)',
+          '소아의 경우: 8시간 이상 소변을 보지 않거나, 깨워도 잘 반응 없을 때, 입술이 마르고 눈물 없이 울 때',
+          '증상이 5일 이상 지속되거나 점진적으로 악화',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'gastritis', ko: '급성 위염/기능성 소화불량', en: 'Acute gastritis / Functional dyspepsia', icd: 'K29.1',
+        tests: [
+          'CBC, CRP: WNL',
+          'Electrolyte: WNL',
+          'Lipase/Amylase: WNL',
+          'Liver function test: WNL',
+          'ECG: NSR (상복부 통증 시 심혈관 감별)',
+          '복부 X-ray(KUB): 특이 소견 없음'
+        ],
+        decisions: [
+          'PPI IV (Esomeprazole 40mg / Pantoprazole 40mg)',
+          'H2 blocker IV (Famotidine 20mg)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          '제토제 IV (Metoclopramide 10mg)',
+          '수액 처치 (NS 1L IV)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적인 상태로 평가되었으며, 진찰상 상복부 압통 외 복부 강직, 반발통 등 외과적 응급 질환을 시사하는 소견 없었습니다. 심혈관 원인 감별 위한 심전도 및 혈액검사상 특이 소견 보이지 않았고, 췌장염 등 의심 소견 없었습니다. PPI 정맥 투여 및 대증요법 시행 후 상복부 통증 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다. 환자에게 위내시경 등 추가 검사 필요성 및 자극적 음식/음주/카페인 회피 권유하였습니다.',
+        rx: [
+          '에소메프라졸(Esomeprazole) 40mg PO 1T qd ac × 14d',
+          '판토프라졸(Pantoprazole) 40mg PO 1T qd ac × 14d',
+          '라베프라졸(Rabeprazole) 20mg PO 1T qd ac × 14d',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '부틸스코폴라민(Butylscopolamine) 10mg PO 1T tid prn',
+          '메토클로프라미드(Metoclopramide) 10mg PO 1T tid ac prn',
+          '돔페리돈(Domperidone) 10mg PO 1T tid ac prn',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn (NSAID 회피)'
+        ],
+        fu: '증상 지속 시 1-2주 후 내과 외래 방문하여 위내시경 등 추가 검사 권유. 자극적 음식, 음주, 카페인, NSAID 회피 권유.',
+        warn: [
+          '검은색 변(흑색변), 혈변, 또는 토혈(피를 토함)',
+          '진통제로 조절되지 않는 심한 복통',
+          '음식이나 물을 삼킬 수 없을 정도의 연하 곤란',
+          '의도하지 않은 체중 감소',
+          '가슴 통증 또는 흉부 압박감 (심혈관 원인 감별 필요)',
+          '식은땀, 호흡곤란을 동반한 명치 통증',
+          '38.5℃ 이상의 고열 동반',
+          '심한 어지러움, 실신, 또는 창백한 안색',
+          '복부가 점점 더 단단해지거나 부풀어 오르는 경우',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'constip', ko: '변비', en: 'Constipation', icd: 'K59.0',
+        tests: [
+          '복부 X-ray(KUB): Stool retention (+), no obstruction sign',
+          'CBC, CRP: WNL',
+          'Electrolyte: WNL',
+          'DRE: Hard stool in rectum, no mass'
+        ],
+        decisions: [
+          'Glycerin 관장 시행',
+          '수액 처치 (NS 500mL IV)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          'NSAID IV (Ketorolac 30mg)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 복부 진찰상 압통은 있으나 반발통, 강직, 종괴 등 특이 소견 없었습니다. 복부 X-ray상 대장 내 다량의 변 정체 소견 외 장폐색, free air 등 외과적 응급 질환 소견 보이지 않았으며, 직장 수지 검사상 단단한 변 확인되었습니다. Glycerin 관장 후 다량의 변 배출되어 복통 및 복부 팽만 호전되었으며, 경구 완화제 처방과 함께 식이 조절(수분/섬유질 섭취) 권유 후 귀가 조치하였습니다.',
+        rx: [
+          '수산화마그네슘(Magnesium hydroxide) 500mg PO 1-2T bid',
+          '락툴로스(Lactulose) syr 15mL PO bid',
+          '폴리에틸렌글리콜(Polyethylene glycol) 1포 PO qd',
+          '비사코딜(Bisacodyl) 5mg PO 1-2T hs prn',
+          '비사코딜(Bisacodyl) 좌약 10mg 1개 prn',
+          '정장제(Probiotics) 1포 PO bid',
+          '루비프로스톤(Lubiprostone) 24mcg PO 1T bid (만성 변비)'
+        ],
+        fu: '식이 조절(하루 1.5-2L 수분, 섬유질 섭취), 규칙적 배변 습관 권유. 증상 지속/악화 시 내과 외래 방문.',
+        warn: [
+          '심한 복통이 진통제로 조절되지 않거나 점점 악화',
+          '복부가 점점 더 부풀어 오르고 단단해짐',
+          '구토가 반복되거나 변/가스가 전혀 나오지 않는 경우 (장폐색 의심)',
+          '혈변 또는 검은색 변',
+          '의도하지 않은 체중 감소',
+          '38℃ 이상의 발열 동반',
+          '직장 출혈이 다량이거나 지속됨',
+          '실신 또는 심한 어지러움',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'gerd', ko: '위식도역류질환', en: 'Gastroesophageal reflux disease', icd: 'K21.9',
+        tests: [
+          'ECG: NSR, no ischemic change',
+          'Troponin: Negative',
+          'Chest PA: No active lesion',
+          'CBC, CRP: WNL',
+          'Lipase/Amylase: WNL'
+        ],
+        decisions: [
+          'PPI IV (Esomeprazole 40mg / Pantoprazole 40mg)',
+          'H2 blocker IV (Famotidine 20mg)',
+          '제산제 PO (Gaviscon 1포)',
+          '수액 처치 (NS 500mL IV)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적인 상태로 평가되었으며, 흉통의 심혈관 원인 감별 위한 심전도 및 심근효소 검사상 특이 소견 보이지 않아 급성 관상동맥 증후군 가능성은 낮다고 판단되었습니다. 흉부 X-ray상 폐 실질 침윤 등 특이 소견 없었으며, 증상의 양상 및 검사 소견을 종합할 때 위식도역류질환으로 판단되었습니다. PPI 정맥 투여 후 흉부 작열감 및 상복부 불편감 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '에소메프라졸(Esomeprazole) 40mg PO 1T qd ac × 4-8주',
+          '판토프라졸(Pantoprazole) 40mg PO 1T qd ac × 4-8주',
+          '라베프라졸(Rabeprazole) 20mg PO 1T qd ac × 4-8주',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '알긴산나트륨(Sodium alginate, Gaviscon) 1포 PO tid pc & hs',
+          '돔페리돈(Domperidone) 10mg PO 1T tid ac'
+        ],
+        fu: '4주간 약제 복용 후 내과 외래 방문하여 임상 경과 평가. 증상 지속 시 위내시경 권유. 생활 습관 교정(과식/음주/카페인/취침 직전 식사 회피, 머리 높이고 취침) 권유.',
+        warn: [
+          '흉통이 심하게 악화되거나 좌측 팔/턱/등으로 방사되는 통증',
+          '식은땀, 호흡곤란, 또는 실신을 동반한 흉부 압박감',
+          '연하 곤란이 새로 발생하거나 음식이 걸리는 느낌',
+          '의도하지 않은 체중 감소',
+          '토혈(피를 토함) 또는 검은색 변',
+          '극심한 상복부 통증이 등으로 방사 (췌장염 감별)',
+          '38.5℃ 이상 고열 동반',
+          '구토가 반복되어 수분 섭취 불가능',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  trauma: {
+    name: '🩹 외상',
+    diseases: [
+      {
+        id: 'lac', ko: '단순 열상', en: 'Simple laceration', icd: 'T14.1',
+        tests: [
+          '해당 부위 X-ray: No fracture, no foreign body',
+          '신경학적 진찰: Motor/sensory intact',
+          '혈관 진찰: Distal pulse 양호'
+        ],
+        decisions: [
+          '국소 마취 (2% Lidocaine without epinephrine)',
+          '국소 마취 (2% Lidocaine with epinephrine, 손가락/끝부위 제외)',
+          '생리식염수 세척 (1L 이상)',
+          '봉합 시행 (단순 봉합, Nylon ○-0, ○ stitches)',
+          '봉합 시행 (피하층 흡수성 봉합 + 피부 단순 봉합)',
+          '스킨 스테이플러 적용',
+          '국소 도포제 + 드레싱 적용',
+          'Tetanus toxoid 0.5mL IM 접종',
+          'TIG (Tetanus immune globulin) IM 접종 (오염 상처)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 손상 부위 진찰상 [부위] 약 [길이]cm의 단순 열상이 확인되었습니다. 해당 부위 영상 검사상 골절 및 이물질 잔존 소견 없었으며, 원위부 운동/감각/순환 평가상 신경/혈관/건 손상 의심 소견 없었습니다. 2% 리도카인으로 국소 마취 후 생리식염수로 충분히 세척하였고, [N] stitch 봉합 시행 후 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 [Tdap booster 시행/예방접종력 적절] 처리하였으며, 상처 관리 교육 및 발사 일정 안내 후 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '세팔렉신(Cephalexin) 500mg PO 1T qid × 5d (오염 상처/감염 위험)',
+          '아목시실린/클라불라네이트(Amoxicillin/Clavulanate) 625mg PO 1T tid pc × 5d (동물 교상)',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          'Mupirocin 연고 도포 bid (드레싱 교환 시)',
+          '드레싱 세트 처방'
+        ],
+        fu: '2일 후 외과 외래 또는 가까운 의원에서 드레싱 교환. 발사 일정: 안면 4-5일, 두피/체간 7-10일, 사지 10-14일, 관절 부위 14일. 봉합 부위 1일 1회 소독 및 드레싱 교환 권유, 24시간 후부터 가볍게 세척 가능.',
+        warn: [
+          '봉합 부위의 발적이 점점 확산되거나 열감/부종이 심해짐',
+          '농성 분비물(노란/녹색 고름)이 나오는 경우',
+          '38℃ 이상 발열이 동반되는 경우',
+          '통증이 점점 심해지거나 진통제로 조절되지 않음',
+          '봉합 부위에서 다량의 출혈이 멈추지 않음',
+          '손상 부위 원위부의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
+          '손가락/발가락의 운동이 잘 안되거나 통증이 심함',
+          '봉합 실이 풀리거나 상처가 벌어진 경우',
+          '림프절(겨드랑이/사타구니/목)이 부어오르는 경우',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'contusion', ko: '좌상/타박상', en: 'Contusion', icd: 'T14.0',
+        tests: [
+          '해당 부위 X-ray: No fracture',
+          '신경학적 진찰: Motor/sensory intact',
+          '혈관 진찰: Distal pulse 양호'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg)',
+          '진통제 IV (Tramadol 50mg)',
+          '아이스팩 적용',
+          '압박 붕대 적용',
+          '거상 권유'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [부위] 부종 및 압통, 반상출혈 확인되었습니다. 해당 부위 X-ray상 골절 소견 보이지 않았고, 신경학적 진찰상 원위부 운동/감각/순환 정상이었으며 구획증후군을 시사하는 소견은 관찰되지 않았습니다. 정맥 진통제 투여 및 RICE 처치 시행 후 통증 일부 호전되어, 경구 약제 처방 및 보존적 치료(휴식/냉찜질/압박/거상) 교육 후 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 3-5d',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc',
+          '케토프로펜(Ketoprofen) 플라스타 1매 qd 외용',
+          '트라마돌/아세트아미노펜(Tramadol/Acetaminophen) 복합제 1T tid prn (심한 통증)'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 3-5일 이상 통증/부종 지속, 운동 제한 지속 시 정형외과 외래 방문. 첫 48시간은 냉찜질, 이후 온찜질 가능.',
+        warn: [
+          '통증이 진통제로 조절되지 않거나 점점 악화',
+          '부종이 급격히 증가하거나 손상 부위가 단단하고 팽팽해짐',
+          '손상 부위 원위부(손/발끝)의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
+          '손가락/발가락을 움직일 수 없거나 움직일 때 극심한 통증 (구획증후군 의심)',
+          '체중을 실을 수 없거나 사용할 수 없을 정도의 기능 장애',
+          '발적, 열감이 점점 확산되거나 농성 분비물',
+          '38℃ 이상 발열 동반',
+          '소변 색깔이 콜라색/검붉은색으로 변함 (횡문근융해증 의심)',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'sprain', ko: '관절 염좌', en: 'Sprain', icd: 'S93.4',
+        tests: [
+          '해당 관절 X-ray: No fracture, no dislocation',
+          '신경학적 진찰: Distal motor/sensory intact',
+          '혈관 진찰: Distal pulse 양호',
+          'Ottawa rules 적용: 영상 검사 적응 평가'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg)',
+          '아이스팩 적용',
+          '압박 붕대(Elastic bandage) 적용',
+          '부목 고정(Short leg/arm splint) 적용',
+          '거상 권유',
+          '목발 처방 (체중 부하 제한)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [관절] 부위 부종, 압통, 운동 제한 확인되었습니다. 해당 관절 X-ray상 골절 및 탈구 소견 없었으며, 신경학적 진찰상 원위부 운동/감각/순환 정상이었습니다. 인대 손상 의심되어 정맥 진통제 투여 및 RICE 처치, 부목/탄력 붕대 고정 시행 후 통증 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다. 환자에게 RICE 원칙 및 체중 부하 제한 교육하였고, 정형외과 외래 추적 관찰 권유하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 7d',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc',
+          '케토프로펜(Ketoprofen) 플라스타 1매 qd 외용',
+          '디클로페낙(Diclofenac) 겔 외용 bid-tid'
+        ],
+        fu: '3-5일 후 정형외과 외래 방문하여 인대 손상 정도 평가 및 재활 치료 계획. 처음 48-72시간은 RICE(휴식/냉찜질/압박/거상) 원칙 준수. 부목 임의 제거 금지.',
+        warn: [
+          '통증이 진통제로 조절되지 않거나 시간이 지나도 악화',
+          '부종이 급격히 증가하거나 손상 부위가 단단하고 팽팽해짐',
+          '손/발끝의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
+          '손가락/발가락을 움직일 수 없거나 부목 안에서 극심한 통증',
+          '발열, 발적, 열감이 손상 부위에서 확산되는 경우',
+          '체중을 전혀 실을 수 없거나 관절이 빠진 느낌',
+          '관절에서 비정상적인 소리나 변형이 관찰됨',
+          '부목/붕대가 너무 조이거나 불편하여 일상생활 불가',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'headinj', ko: '경증 두부 외상', en: 'Minor head injury', icd: 'S00.0',
+        tests: [
+          'Brain CT: No acute intracranial lesion',
+          'Cervical spine X-ray: No fracture (필요 시)',
+          'GCS: 15점',
+          '신경학적 진찰: NAD (Cranial nerve, motor, sensory, cerebellar 정상)',
+          'V/S: Stable'
+        ],
+        decisions: [
+          '진통제 IV (Acetaminophen 1g)',
+          '제토제 IV (Metoclopramide 10mg / Ondansetron 4mg)',
+          '응급실 경과 관찰 (4-6시간)',
+          '두피 열상 시 봉합 시행',
+          'Tetanus toxoid 0.5mL IM 접종 (열상 동반 시)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며 의식 명료(GCS 15)하였고, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 모두 정상이었습니다. 두부 CT 촬영상 두개 내 급성 출혈, 골절, 뇌부종 등 외상성 병변 보이지 않았으며, 외상성 두부 손상의 영상학적 소견 없음을 확인하였습니다. 응급실에서 [N]시간 경과 관찰 동안 의식 변화나 신경학적 증상 악화 없음을 재확인하였고, 환자 및 보호자에게 두부 외상 후 관찰 사항 및 재내원 기준 교육 후 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '메토클로프라미드(Metoclopramide) 10mg PO 1T tid prn (오심)',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 두통/어지러움/기억력 저하 지속 시 신경외과/신경과 외래 방문. 향후 48시간 보호자가 환자의 의식 상태를 주의 깊게 관찰 필요(2-3시간 간격 깨워서 확인).',
+        warn: [
+          '의식이 점점 흐려지거나 졸음이 심해짐, 깨워도 잘 반응 없음',
+          '구토가 2회 이상 반복되거나 분출성 구토 발생',
+          '경련 발생',
+          '두통이 점점 심해지거나 진통제로 조절되지 않음',
+          '편측 마비, 손/발에 힘이 빠짐, 또는 감각 이상',
+          '말이 어눌해지거나 이상한 행동을 보임',
+          '시야가 흐려지거나 둘로 보임, 한쪽 눈 동공이 더 커짐',
+          '귀나 코에서 맑은 액체 또는 피가 나옴',
+          '균형감각 상실, 휘청거림, 똑바로 걷지 못함',
+          '음주 후 외상의 경우 의식 변화 더욱 주의 깊게 관찰',
+          '특히 항응고제/항혈소판제 복용 중인 경우 정상 소견이어도 증상 발생 시 즉시 내원',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 향후 24-48시간이 가장 중요한 관찰 시간입니다.'
+        ]
+      },
+      {
+        id: 'burn', ko: '1-2도 화상 (소범위)', en: '1st-2nd degree burn (limited area)', icd: 'T30.0',
+        tests: [
+          '화상 범위 평가 (Rule of nines, TBSA <10%)',
+          '화상 깊이 평가 (Superficial partial thickness)',
+          'V/S: Stable',
+          '동반 손상 평가 (흡입 손상 등): NAD'
+        ],
+        decisions: [
+          '냉수 세척/냉찜질 (15-20분)',
+          '진통제 IV (Acetaminophen 1g / Ketorolac 30mg)',
+          '진통제 IV (Tramadol 50mg)',
+          '수액 처치 (NS 500mL IV)',
+          '화상 드레싱 (Foam dressing / Silver dressing)',
+          '항생제 도포제 (Silver sulfadiazine cream)',
+          'Tetanus toxoid 0.5mL IM 접종'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [부위] 약 TBSA [○]% 1-2도 화상(표재성 부분층) 확인되었습니다. 흡입 손상, 안면/회음부/관절 침범, 환상 화상 등 입원이 필요한 중증 화상 소견 보이지 않았으며, 동반 외상 없음을 확인하였습니다. 충분한 냉수 세척 시행 후 정맥 진통제 투여하였고, 수포 보존하며 화상용 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 [Tdap booster 시행/예방접종력 적절] 처리하였으며, 화상 관리 교육 및 외래 추적 관찰 안내 후 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '트라마돌/아세트아미노펜(Tramadol/Acetaminophen) 복합제 1T tid prn (심한 통증)',
+          '세팔렉신(Cephalexin) 500mg PO 1T qid × 5d (감염 위험 시)',
+          'Silver sulfadiazine(실버 설파다이아진) 크림 1일 1-2회 도포',
+          'Mupirocin 연고 도포 (소범위)',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc'
+        ],
+        fu: '1-2일 후 화상클리닉/외과 외래 방문하여 드레싱 교환 및 화상 깊이 재평가. 수포는 임의로 터트리지 않도록 권유. 화상 부위 자외선 노출 피하고 보습 권유(흉터 예방).',
+        warn: [
+          '화상 부위에 발적이 점점 확산되거나 농성 분비물(고름)이 나옴',
+          '38℃ 이상 발열 또는 오한',
+          '통증이 점점 심해지거나 진통제로 조절되지 않음',
+          '수포가 매우 커지거나 다량으로 새로 발생',
+          '화상 부위가 검게 변하거나 감각이 없어짐 (3도 화상 진행)',
+          '관절 부위 화상으로 운동 제한이 심해짐',
+          '얼굴/입/목 부위 화상에서 호흡곤란, 목소리 변화, 그을음 가래',
+          '소변량 현저한 감소, 어지러움, 식은땀 (전신 반응)',
+          '의식 변화 또는 극심한 무기력',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  neuro: {
+    name: '🧠 두통/신경',
+    diseases: [
+      {
+        id: 'tth', ko: '긴장성 두통', en: 'Tension-type headache', icd: 'G44.2',
+        tests: [
+          '신경학적 진찰: NAD (Cranial nerve, motor, sensory, cerebellar 모두 정상)',
+          '경부 강직 음성',
+          'V/S: Stable, 혈압 정상',
+          'Brain CT: No acute intracranial lesion (시행 시)',
+          'CBC, CRP: WNL',
+          'Red flag (SNOOP4): Negative'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg / Acetaminophen 1g)',
+          '진토제 IV (Metoclopramide 10mg)',
+          '근이완제 IV (Diazepam 5mg, 신중)',
+          '수액 처치 (NS 500mL IV)',
+          '안정 (어두운 환경에서 경과 관찰)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 모두 정상이었고 경부 강직 등 뇌수막 자극 증상 보이지 않았습니다. 두통의 양상(양측성 압박감, 점진적 발생, 평소 두통과 유사) 및 진찰 소견을 종합할 때 긴장성 두통으로 판단되었으며, SNOOP4 등 두통의 적색기(Red flag) 소견 보이지 않아 응급 영상검사 적응증에 해당하지 않았습니다. 정맥 진통제 투여 후 두통 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '이부프로펜(Ibuprofen) 400mg PO 1T tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc (근육 긴장)',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '아미트립틸린(Amitriptyline) 10mg PO 1T qd hs (만성 시 예방)'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 두통이 1주 이상 지속되거나 빈도가 증가, 또는 새로운 양상의 두통 발생 시 신경과 외래 방문. 진통제 남용(주 2-3회 이상) 시 약물과용두통 위험 있음 안내.',
+        warn: [
+          '갑작스럽고 평소와 완전히 다른 양상의 극심한 두통 (천둥두통 - 지주막하출혈 의심)',
+          '두통과 함께 발열, 목이 뻣뻣함, 빛에 예민함 (뇌수막염 의심)',
+          '의식이 흐려지거나 졸음, 혼동, 이상한 행동',
+          '편측 마비, 손/발에 힘이 빠짐, 또는 감각 이상',
+          '말이 어눌해지거나 시야 이상, 한쪽 눈 동공이 더 커짐',
+          '경련 발생',
+          '두통과 함께 반복적인 구토, 특히 분출성 구토',
+          '두부 외상 후 발생한 두통이거나 외상 후 악화되는 두통',
+          '50세 이상에서 처음 발생한 두통이거나 평소와 다른 양상',
+          '점진적으로 매일 악화되는 두통',
+          '자세 변화 시 악화되는 두통 (눕거나 기침 시 악화)',
+          '임신 중이거나 출산 직후에 발생한 심한 두통',
+          '암, HIV, 면역저하 환자에서 발생한 두통',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'migraine', ko: '편두통', en: 'Migraine', icd: 'G43.9',
+        tests: [
+          '신경학적 진찰: NAD',
+          'V/S: Stable',
+          'Brain CT: No acute intracranial lesion (적응증 시)',
+          'Red flag (SNOOP4): Negative'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg)',
+          '진토제 IV (Metoclopramide 10mg)',
+          '진토제 IV (Ondansetron 4mg)',
+          '수액 처치 (NS 1L IV)',
+          '스테로이드 IV (Dexamethasone 10mg, 재발 예방)',
+          '안정 (어두운 환경에서 경과 관찰)',
+          'Triptan 처방 (개인력 있을 시)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 모두 정상이었고 적색기(Red flag) 소견 보이지 않았습니다. 두통의 양상(편측성, 박동성, 오심/구토 동반, 광/소리 공포증, 평소 편두통과 유사) 및 진찰 소견을 종합할 때 편두통으로 판단되었습니다. 정맥 진통제 및 제토제 투여 후 두통 및 오심 호전되어 경구 약제 처방과 함께 귀가 조치하였으며, 향후 발작 시 사용할 trip­tan 약제 안내하였습니다.',
+        rx: [
+          '수마트립탄(Sumatriptan) 50mg PO 1T 발작 시 (필요시 2시간 후 1회 더)',
+          '나라트립탄(Naratriptan) 2.5mg PO 1T 발작 시',
+          '졸미트립탄(Zolmitriptan) 2.5mg PO 1T 발작 시',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '이부프로펜(Ibuprofen) 400mg PO 1T tid pc',
+          '메토클로프라미드(Metoclopramide) 10mg PO 1T tid prn (오심)',
+          '돔페리돈(Domperidone) 10mg PO 1T tid prn',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '프로프라놀롤(Propranolol) 40mg PO 1T bid (예방, 만성 시)',
+          '토피라메이트(Topiramate) 25mg PO 1T qd (예방, 만성 시)'
+        ],
+        fu: '월 2회 이상 발작 또는 일상생활에 지장이 있는 경우 신경과 외래 방문하여 예방 치료 계획. Triptan은 발작 초기에 복용 시 효과적이며 24시간 내 최대 2회까지만 사용. 진통제 남용 시 약물과용두통 위험.',
+        warn: [
+          '평소 편두통과 양상이 완전히 다른 새로운 두통',
+          '갑작스럽게 발생한 극심한 두통 (천둥두통)',
+          '두통과 함께 의식 변화, 졸음, 혼동',
+          '편측 마비, 감각 이상, 말 어눌함, 또는 시야 결손이 1시간 이상 지속',
+          '발열, 목이 뻣뻣함, 빛에 예민함 동반 (뇌수막염 의심)',
+          '경련 발생',
+          '두부 외상 후 발생한 두통',
+          '50세 이후 처음 발생한 편두통',
+          '임신 중이거나 출산 직후 발생한 심한 두통',
+          'Triptan 복용 후 가슴 통증, 호흡곤란, 또는 심한 어지러움',
+          '구토가 지속되어 수분 섭취 불가',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'bppv', ko: '양성돌발성체위성현훈 (BPPV)', en: 'Benign paroxysmal positional vertigo', icd: 'H81.1',
+        tests: [
+          '신경학적 진찰: NAD (Central vertigo 의심 소견 없음)',
+          'Dix-Hallpike test: Positive (해당 측)',
+          'HINTS exam: Peripheral pattern',
+          'V/S: Stable',
+          'ECG: NSR',
+          'Glucose: WNL',
+          'Brain CT: No acute lesion (시행 시)'
+        ],
+        decisions: [
+          '진토제 IV (Metoclopramide 10mg / Ondansetron 4mg)',
+          '항히스타민제 IV (Dimenhydrinate 50mg)',
+          '수액 처치 (NS 500mL IV)',
+          'Epley maneuver (이석정복술) 시행',
+          '응급실 경과 관찰 (증상 호전 확인)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 정상이었고 HINTS 검사상 말초성 현훈에 합당한 패턴이었습니다. Dix-Hallpike 검사상 [해당 측] 양성 소견 보였으며, 중추성 현훈을 시사하는 신경학적 결손 보이지 않았습니다. 양성돌발성체위성현훈으로 진단되어 Epley maneuver 시행 및 정맥 진토제 투여 후 현훈 및 오심 호전되었습니다. 활력징후 안정적이며 자가 보행 가능한 상태로 회복되어 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '메클리진(Meclizine) 12.5mg PO 1T tid prn',
+          '디멘히드리네이트(Dimenhydrinate) 50mg PO 1T tid prn',
+          '베타히스틴(Betahistine) 12mg PO 1T tid pc',
+          '메토클로프라미드(Metoclopramide) 10mg PO 1T tid prn (오심)',
+          '돔페리돈(Domperidone) 10mg PO 1T tid prn',
+          '디아제팜(Diazepam) 2mg PO 1T tid prn (단기간만)'
+        ],
+        fu: '증상 지속/반복 시 이비인후과 외래 방문하여 Epley maneuver 반복 시행 또는 추가 평가. 어지러움이 1주 이상 지속, 청력 변화, 또는 새로운 신경학적 증상 발생 시 신경과 외래 방문.',
+        warn: [
+          '심한 두통과 함께 발생한 어지러움',
+          '편측 마비, 감각 이상, 말 어눌함, 발음 장애 (뇌졸중 의심)',
+          '시야 이상(둘로 보임, 시야 결손), 안검 하수, 동공 이상',
+          '얼굴이 한쪽으로 처지거나 비대칭',
+          '의식 변화, 졸음, 혼동',
+          '경련 발생',
+          '균형 잡지 못하고 걸을 수 없거나, 한쪽으로 자꾸 쓰러짐',
+          '청력 저하, 이명, 또는 한쪽 귀가 먹먹한 느낌이 새로 발생',
+          '체위 변화와 관계없이 지속되는 어지러움',
+          '심한 구토로 수분 섭취가 불가능한 경우',
+          '가슴 두근거림, 흉통, 또는 실신 동반',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  msk: {
+    name: '🦴 근골격',
+    diseases: [
+      {
+        id: 'lbp', ko: '급성 요통', en: 'Acute low back pain', icd: 'M54.5',
+        tests: [
+          'L-spine X-ray: No fracture, no significant abnormality',
+          '신경학적 진찰: 하지 motor/sensory 정상',
+          'SLR (Straight leg raising) test: Negative',
+          '항문 괄약근 긴장도/회음부 감각: 정상',
+          'V/S: Stable',
+          'Red flag (감염/암/마미증후군/외상): Negative'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg)',
+          '진통제 IV (Tramadol 50mg)',
+          '근이완제 IV (Diazepam 5mg, 신중)',
+          '수액 처치 (NS 500mL IV)',
+          'Trigger point 주사 (Lidocaine, 시행 시)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 신경학적 진찰상 하지 근력 및 감각 정상, SLR 검사 음성, 항문 괄약근 긴장도 및 회음부 감각 정상이었습니다. 마미증후군, 척수병증, 또는 적색기(감염/외상/암성) 소견 보이지 않았으며, 요추 X-ray상 골절 및 유의미한 이상 소견 없었습니다. 단순 기계적 요통으로 판단되어 정맥 진통제 투여 후 통증 호전되어 자가 보행 가능한 상태로 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 7d',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '이부프로펜(Ibuprofen) 400mg PO 1T tid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc × 7d',
+          '톨페리손(Tolperisone) 50mg PO 1T tid pc',
+          '트라마돌/아세트아미노펜(Tramadol/Acetaminophen) 복합제 1T tid prn (심한 통증)',
+          '케토프로펜(Ketoprofen) 플라스타 1매 qd 외용'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 1-2주 이상 통증 지속 또는 신경학적 증상 발생 시 정형외과/신경외과/재활의학과 외래 방문. 단기간 안정 후 점진적 활동 권유, 침상 안정은 1-2일 이내로 제한.',
+        warn: [
+          '대소변을 못 가리거나 소변/대변이 새는 경우 (마미증후군 - 응급)',
+          '회음부, 항문 주변, 또는 사타구니의 감각이 둔해지거나 마비됨',
+          '양쪽 다리에 점점 힘이 빠지거나 걸을 수 없게 됨',
+          '한쪽 또는 양쪽 다리에 새로운 마비/심한 감각 이상',
+          '발열(38℃ 이상) 동반 요통 (감염성/척추염 의심)',
+          '진통제로 조절되지 않는 극심한 통증, 특히 야간에 악화되는 통증',
+          '의도하지 않은 체중 감소 동반',
+          '외상 후 발생/악화된 통증',
+          '복부 통증, 흉부 통증, 또는 식은땀 동반 (대동맥류 등 감별)',
+          '암 환자 또는 면역저하 환자에서 발생한 새로운 요통',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'neck', ko: '급성 경부통', en: 'Acute neck pain', icd: 'M54.2',
+        tests: [
+          'C-spine X-ray: No fracture, no instability',
+          '신경학적 진찰: 상지 motor/sensory 정상, DTR 정상',
+          'Spurling test: Negative',
+          'V/S: Stable',
+          'Red flag (외상/감염/척수병증): Negative'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg / Acetaminophen 1g)',
+          '근이완제 IV (Diazepam 5mg, 신중)',
+          '수액 처치 (NS 500mL IV)',
+          '경부 안정 (Soft collar 적용)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 신경학적 진찰상 상지 근력 및 감각, 심부건반사 모두 정상이었고 Spurling 검사 음성, 척수병증을 시사하는 long tract sign 보이지 않았습니다. 경추 X-ray상 골절 및 불안정성 소견 없었으며 단순 기계적 경부통으로 판단되었습니다. 정맥 진통제 투여 후 통증 호전되어 경구 약제 처방과 함께 귀가 조치하였고, 자세 교정 및 스트레칭 교육하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 7d',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc × 7d',
+          '톨페리손(Tolperisone) 50mg PO 1T tid pc',
+          '케토프로펜(Ketoprofen) 플라스타 1매 qd 외용'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 1-2주 이상 지속, 상지 방사통/감각 이상 발생 시 정형외과/신경외과/재활의학과 외래 방문. 장시간 같은 자세 회피, 스트레칭 권유.',
+        warn: [
+          '상지 또는 양 손에 새로 발생한 마비, 힘 빠짐, 또는 감각 이상',
+          '양 손/발이 모두 저리거나 둔해짐, 보행 장애 (척수병증 의심)',
+          '대소변 조절 장애',
+          '심한 두통, 발열, 목이 뻣뻣함과 동반 (뇌수막염 감별)',
+          '외상 후 발생/악화된 경부통, 특히 사지 마비/감각 이상 동반',
+          '의식 변화 또는 말 어눌함',
+          '38℃ 이상의 발열과 함께 경부 통증 (감염성 척추염/뇌수막염)',
+          '의도하지 않은 체중 감소 동반',
+          '진통제로 조절되지 않는 극심한 통증',
+          '가슴 통증, 호흡곤란, 또는 식은땀 동반 (심근경색 등 감별)',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  gu: {
+    name: '💧 비뇨생식기',
+    diseases: [
+      {
+        id: 'uti', ko: '단순 요로감염', en: 'Uncomplicated UTI', icd: 'N39.0',
+        tests: [
+          'Urinalysis: WBC (+), Nitrite (+), Bacteria (+)',
+          'CBC, CRP: WNL / Mild elevation',
+          'BUN/Cr: WNL',
+          'V/S: Stable, no fever or low-grade fever',
+          'CVA tenderness: Negative (신우신염 감별)',
+          'Urine culture 의뢰'
+        ],
+        decisions: [
+          '항생제 IV 1st dose (Ceftriaxone 1g)',
+          '항생제 IV 1st dose (Ciprofloxacin 400mg)',
+          '진통제 IV (Ketorolac 30mg)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          '수액 처치 (NS 1L IV)',
+          '해열제 IV (Acetaminophen 1g, 발열 시)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 치골상부 압통은 있으나 CVA tenderness 음성으로 신우신염을 시사하는 소견 보이지 않았습니다. 소변 검사상 백혈구뇨 및 아질산염 양성으로 요로감염 합당한 소견 확인되었고, 혈액 검사상 전신성 감염을 시사하는 소견 보이지 않았습니다. 응급실에서 항생제 1차 정맥 투여 및 대증요법 시행 후 증상 호전되어, 경구 항생제 및 진통제 처방과 함께 귀가 조치하였습니다. 환자에게 항생제 완복 및 충분한 수분 섭취 권유하였습니다.',
+        rx: [
+          '시프로플록사신(Ciprofloxacin) 500mg PO 1T bid × 3-5d',
+          '레보플록사신(Levofloxacin) 500mg PO 1T qd × 3-5d',
+          '세프카펜(Cefcapene) 100mg PO 1T tid × 5-7d',
+          '세프디니르(Cefdinir) 100mg PO 1T tid × 5-7d',
+          '포스포마이신(Fosfomycin) 3g PO 1포 1회 (단순 방광염)',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '부틸스코폴라민(Butylscopolamine) 10mg PO 1T tid prn (배뇨통/방광 경련)',
+          '하루 2L 이상 수분 섭취 권유'
+        ],
+        fu: '항생제 처방대로 완복 권유. 3-5일 후 증상 미호전 시 비뇨의학과 외래 방문(요배양 결과 확인). 반복성 요로감염 시 추가 평가 필요.',
+        warn: [
+          '38.5℃ 이상의 고열 또는 오한',
+          '옆구리(허리 양옆) 통증 (신우신염 의심)',
+          '오심, 구토로 수분 섭취가 불가능',
+          '소변에서 다량의 출혈이나 핏덩어리',
+          '소변이 전혀 나오지 않거나 양이 현저히 감소',
+          '심한 어지러움, 실신, 또는 의식 변화',
+          '항생제 복용 후 48-72시간 이상 증상 호전 없거나 악화',
+          '복부 또는 골반 통증이 점점 악화',
+          '항생제 알레르기 반응 (피부 발진, 가려움, 호흡곤란)',
+          '임신 중인 경우 모든 증상에 대해 적극적 재내원',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'stone', ko: '요로결석', en: 'Urolithiasis', icd: 'N20.0',
+        tests: [
+          'Non-contrast abdominopelvic CT: Stone (+), [위치] [크기]mm',
+          'KUB X-ray: Radiopaque stone (+) / Non-visualized',
+          'Urinalysis: RBC (+), no significant WBC',
+          'CBC, CRP, BUN/Cr, Electrolyte: WNL',
+          'V/S: Stable, no fever',
+          'Hydronephrosis 평가'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg)',
+          '진통제 IV (Tramadol 50mg)',
+          '진통제 IV (Pethidine 25-50mg, 심한 통증)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          '수액 처치 (NS 1L IV)',
+          '제토제 IV (Metoclopramide 10mg / Ondansetron 4mg)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 비조영증강 복부 CT상 [우/좌측] [요관/신장] 약 [○]mm 결석 확인되었습니다. 발열, 백혈구뇨, 신장 기능 저하 등 폐쇄성 신우신염 또는 합병증 시사하는 소견 보이지 않았으며, 통증 외 활력징후 안정적이었습니다. 정맥 진통제 및 수액 투여 후 통증 호전되었고, 결석 자연 배출 가능한 크기로 평가되어 경구 약제 처방과 함께 외래 추적 관찰 계획으로 귀가 조치하였습니다.',
+        rx: [
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 5-7d',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '트라마돌/아세트아미노펜(Tramadol/Acetaminophen) 복합제 1T tid prn',
+          '탐스로신(Tamsulosin) 0.2mg PO 1T qd hs × 2-4주 (MET)',
+          '부틸스코폴라민(Butylscopolamine) 10mg PO 1T tid prn',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '하루 2-3L 이상 수분 섭취 권유'
+        ],
+        fu: '3-5일 내 비뇨의학과 외래 방문하여 추적 영상 검사 및 경과 평가. 결석 자연 배출 시 결석 회수하여 성분 분석 권유. 통증 발작 시 즉시 진통제 복용.',
+        warn: [
+          '38℃ 이상 발열 또는 오한 (폐쇄성 신우신염 - 응급)',
+          '진통제로 조절되지 않는 극심한 통증',
+          '심한 오심/구토로 수분 섭취 및 약 복용 불가',
+          '소변량이 현저히 감소하거나 전혀 나오지 않음',
+          '다량의 혈뇨 또는 핏덩어리 배출',
+          '의식 변화, 어지러움, 실신, 또는 식은땀',
+          '저혈압 증상 (창백, 차가운 손발, 빠른 맥박)',
+          '신장이 한쪽뿐이거나 신장 기능 저하 환자에서 결석 발생',
+          '단신(콩팥이 하나) 환자',
+          '임신 중인 경우 모든 통증/증상에 대해 적극적 재내원',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  skin: {
+    name: '🌿 피부/알레르기',
+    diseases: [
+      {
+        id: 'urticaria', ko: '두드러기/알레르기 반응', en: 'Urticaria / Allergic reaction', icd: 'L50.9',
+        tests: [
+          'V/S: Stable, no hypotension',
+          'SpO2: 95% 이상',
+          '호흡음: Clear, no wheezing',
+          '안면/입술/혀 부종 평가: 없음',
+          '아나필락시스 평가: Negative'
+        ],
+        decisions: [
+          '항히스타민제 IV (Chlorpheniramine 4mg / Pheniramine 45.5mg)',
+          'H2 blocker IV (Famotidine 20mg)',
+          '스테로이드 IV (Methylprednisolone 40mg / Dexamethasone 5mg)',
+          '수액 처치 (NS 500-1000mL IV)',
+          '응급실 경과 관찰 (최소 4시간)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 호흡곤란, 천명음, 안면/입술/혀 부종 등 아나필락시스를 시사하는 소견 보이지 않았습니다. 신체 진찰상 [부위] 두드러기 발진 및 소양감 확인되었으며, 정맥 항히스타민제 및 스테로이드 투여 후 발진 및 소양감 호전되었습니다. 응급실에서 [N]시간 경과 관찰 동안 증상 재발 없음과 활력징후 안정적임을 재확인 후 경구 약제 처방과 함께 귀가 조치하였습니다. 유발 원인 회피 및 재발 시 대처법 교육하였습니다.',
+        rx: [
+          '세티리진(Cetirizine) 10mg PO 1T qd × 1-2주',
+          '레보세티리진(Levocetirizine) 5mg PO 1T qd',
+          '로라타딘(Loratadine) 10mg PO 1T qd',
+          '베포타스틴(Bepotastine) 10mg PO 1T bid',
+          '펙소페나딘(Fexofenadine) 180mg PO 1T qd',
+          '프레드니솔론(Prednisolone) 5mg PO 3T qd am × 3-5d (필요시 tapering)',
+          '메틸프레드니솔론(Methylprednisolone) 4mg PO 1T tid × 3-5d',
+          'Calamine 로션 외용',
+          '에피네프린 자가주사기(EpiPen) 처방 (아나필락시스 위험군)'
+        ],
+        fu: '증상 호전 시 추가 진료 불필요. 두드러기 6주 이상 지속(만성), 반복적 발생, 또는 아나필락시스 의심 시 알레르기내과 외래 방문하여 원인 평가. 가능한 원인(약물/음식/벌레 등) 회피 권유.',
+        warn: [
+          '입술/혀/목/얼굴이 붓는 경우 (혈관부종 - 응급)',
+          '호흡곤란, 숨이 차거나 천명음(쌕쌕거림)',
+          '목소리가 잠기거나 삼키기 어려움',
+          '심한 어지러움, 실신, 또는 의식 변화',
+          '가슴이 답답하거나 두근거림, 혈압 저하 증상',
+          '복부 통증, 구토, 또는 설사가 동반된 발진',
+          '발진이 전신으로 빠르게 확산',
+          '38.5℃ 이상의 발열 동반',
+          '피부 박리, 점막 침범, 또는 물집 형성 (Stevens-Johnson 의심)',
+          '두드러기와 함께 식은땀, 창백한 안색',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 특히 호흡곤란이나 입술 부종은 분초를 다투는 응급 상황입니다.'
+        ]
+      },
+      {
+        id: 'cellulitis', ko: '봉와직염', en: 'Cellulitis', icd: 'L03.9',
+        tests: [
+          'CBC: Leukocytosis',
+          'CRP: Elevated',
+          'V/S: Stable, no high fever',
+          '해당 부위 진찰: 발적/열감/부종 경계 marking',
+          '괴사성 근막염 의심 소견: Negative (극심한 통증/괴사/수포/crepitus 없음)',
+          'X-ray: No gas formation, no foreign body'
+        ],
+        decisions: [
+          '항생제 IV 1st dose (Cefazolin 1-2g)',
+          '항생제 IV 1st dose (Ceftriaxone 1-2g)',
+          '진통제 IV (Ketorolac 30mg / Acetaminophen 1g)',
+          '수액 처치 (NS 1L IV)',
+          '환부 거상 권유',
+          '병변 경계 marking (악화 추적용)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 [부위] 발적, 열감, 부종, 압통 확인되었습니다. 괴사성 근막염을 시사하는 극심한 통증, 피부 괴사, 수포, crepitus, 전신성 패혈증 징후 보이지 않았으며, 영상 검사상 가스 형성이나 농양 의심 소견 없었습니다. 혈액 검사상 백혈구 증가 및 CRP 상승 소견 확인되었고, 응급실에서 항생제 1차 정맥 투여 및 진통제 시행 후 환부 경계 marking하고 경과 관찰하였습니다. 외래 추적 관찰 가능한 단순 봉와직염으로 판단되어 경구 항생제 처방과 함께 귀가 조치하였습니다.',
+        rx: [
+          '세팔렉신(Cephalexin) 500mg PO 1T qid × 7-10d',
+          '아목시실린/클라불라네이트(Amoxicillin/Clavulanate) 625mg PO 1T tid pc × 7-10d',
+          '클린다마이신(Clindamycin) 300mg PO 1T qid × 7-10d (페니실린 알레르기/MRSA 의심)',
+          '트리메토프림/설파메톡사졸(TMP/SMX) DS 1T bid × 7-10d (MRSA 의심)',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '환부 거상 및 안정 권유'
+        ],
+        fu: '2-3일 후 외과/피부과 외래 방문하여 임상 경과 평가. 항생제 처방대로 완복 권유. 환부 경계가 매직펜으로 표시되어 있으니, 발적이 그 경계를 넘어 확산되면 즉시 재내원.',
+        warn: [
+          '발적/부종이 매직펜으로 표시한 경계를 넘어 빠르게 확산',
+          '38.5℃ 이상의 고열 또는 오한',
+          '극심한 통증이 진통제로 조절되지 않거나, 발적 정도에 비해 통증이 극심한 경우 (괴사성 근막염 의심 - 응급)',
+          '피부에 물집, 자색/검은 반점, 또는 괴사 소견 발생',
+          '환부에서 농성 분비물 또는 악취',
+          '의식 변화, 혼동, 또는 극심한 무기력 (패혈증 의심)',
+          '심한 어지러움, 실신, 저혈압 증상',
+          '림프관을 따라 붉은 선이 올라옴',
+          '항생제 복용 후 48-72시간 이상 증상 호전 없거나 악화',
+          '항생제 알레르기 반응 (피부 발진, 가려움, 호흡곤란)',
+          '당뇨/면역저하 환자: 모든 악화 증상에 대해 적극적 재내원',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      },
+      {
+        id: 'zoster', ko: '대상포진', en: 'Herpes zoster', icd: 'B02.9',
+        tests: [
+          '신체 진찰: Dermatomal distribution vesicular rash',
+          'V/S: Stable',
+          '안와/안면 침범 평가: NAD (또는 양성 시 안과 즉시 의뢰)',
+          '운동/감각 신경 침범 평가',
+          'CBC, CRP: WNL / Mild elevation'
+        ],
+        decisions: [
+          '진통제 IV (Ketorolac 30mg / Tramadol 50mg)',
+          '항바이러스제 처방',
+          '수액 처치 (NS 500mL IV)',
+          '안과 의뢰 (안면/안와 침범 시)'
+        ],
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 [부위, 피부분절 따른] 단측성 띠 모양의 수포성 발진 확인되어 대상포진으로 진단되었습니다. 안면/안와 침범 및 운동 신경 침범 의심 소견 없었으며, 발진 발생 72시간 이내로 항바이러스제 투여 적응증에 해당하였습니다. 정맥 진통제 투여 후 통증 호전되어 경구 항바이러스제 및 신경통 조절 약제 처방과 함께 귀가 조치하였습니다. 환자에게 항바이러스제 완복 및 수포 부위 청결 유지 권유하였습니다.',
+        rx: [
+          '아시클로비르(Acyclovir) 800mg PO 5T/day (1T q4h, 새벽 제외) × 7d',
+          '발라시클로비르(Valacyclovir) 1000mg PO 1T tid × 7d',
+          '팜시클로비르(Famciclovir) 500mg PO 1T tid × 7d',
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '트라마돌/아세트아미노펜(Tramadol/Acetaminophen) 복합제 1T tid prn',
+          '가바펜틴(Gabapentin) 100-300mg PO 1T tid (신경통)',
+          '프레가발린(Pregabalin) 75mg PO 1T bid (신경통)',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '국소 항바이러스 연고 또는 Calamine 로션 외용'
+        ],
+        fu: '3-5일 후 피부과 외래 방문하여 임상 경과 평가. 항바이러스제 7일간 완복 권유. 발진 부위 만지지 않고 청결 유지, 수두 면역 없는 사람 및 임산부와의 접촉 회피.',
+        warn: [
+          '안면, 특히 눈 주위 또는 코끝에 발진 발생/확산 (각막염/실명 위험 - 안과 응급)',
+          '눈에 빨갛게 충혈되거나 시야 이상',
+          '귀에 발진 발생과 함께 안면 마비 또는 청력 저하 (Ramsay-Hunt 의심)',
+          '심한 두통, 발열, 목이 뻣뻣함 (뇌수막염 의심)',
+          '의식 변화, 졸음, 혼동',
+          '발진이 한 분절을 넘어 양측 또는 광범위하게 확산',
+          '38.5℃ 이상의 고열 또는 오한',
+          '발진 부위 2차 세균 감염 의심 (농성 분비물, 발적 확산)',
+          '진통제로 조절되지 않는 극심한 통증',
+          '운동 마비 또는 대소변 조절 장애 (운동 신경 침범)',
+          '면역저하 환자(암/HIV/장기이식/스테로이드 복용): 모든 악화 증상',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  },
+  cv: {
+    name: '❤️ 흉통/심혈관',
+    diseases: [
+      {
+        id: 'ncp', ko: '비심인성 흉통', en: 'Non-cardiac chest pain', icd: 'R07.4',
+        tests: [
+          'ECG: NSR, no ischemic ST/T change',
+          'Troponin: Negative (serial, 0/3hr 또는 0/1hr)',
+          'CK-MB: WNL',
+          'Chest PA: No active lesion, no widened mediastinum',
+          'D-dimer: Negative (해당 시)',
+          'CBC, CRP, Electrolyte: WNL',
+          'HEART score: Low risk',
+          'PERC/Wells score: Low risk for PE'
+        ],
+        decisions: [
+          'PPI IV (Esomeprazole 40mg, GERD 의심 시)',
+          '진통제 IV (Ketorolac 30mg)',
+          '항진경제 IV (Hyoscine N-butylbromide 20mg)',
+          '응급실 경과 관찰 (Serial ECG/Troponin)',
+          'Sublingual nitrate 시험 투여 (반응 평가)'
+        ],
+        narrative: '환자는 응급실 내원 후 흉통의 심혈관 원인 감별을 위한 일련의 검사 시행하였습니다. 심전도상 ST 분절 또는 T파의 허혈성 변화 보이지 않았고, 심근효소(troponin) serial 검사상 음성으로 급성 관상동맥 증후군의 가능성은 낮다고 판단되었습니다. 흉부 X-ray상 폐 실질 침윤, 기흉, 종격동 확장 등 특이 소견 없었으며, HEART score 및 폐색전증 임상 예측 지표 모두 low risk로 평가되었습니다. 활력징후 안정적이며 응급실 경과 관찰 동안 흉통 호전되어 비심인성 흉통(근골격성/위장관성)으로 판단, 경구 약제 처방과 함께 외래 추적 관찰 계획으로 귀가 조치하였습니다.',
+        rx: [
+          '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
+          '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
+          '나프록센(Naproxen) 500mg PO 1T bid pc',
+          '레바미피드(Rebamipide) 100mg PO 1T tid pc',
+          '에소메프라졸(Esomeprazole) 40mg PO 1T qd ac × 2-4주 (GERD 의심)',
+          '판토프라졸(Pantoprazole) 40mg PO 1T qd ac × 2-4주',
+          '알긴산나트륨(Sodium alginate) 1포 PO tid pc',
+          '에페리손(Eperisone) 50mg PO 1T tid pc (근골격성)',
+          '케토프로펜(Ketoprofen) 플라스타 1매 qd 외용 (늑간 신경통)'
+        ],
+        fu: '증상 지속/반복 시 내과(소화기내과/순환기내과) 외래 방문하여 추가 평가. 심혈관 위험인자(고혈압/당뇨/이상지질혈증/흡연) 관리 권유. 위식도역류 의심 시 4주 후 약물 효과 평가.',
+        warn: [
+          '흉통이 점점 심해지거나 가슴을 짓누르는 압박감/조이는 느낌',
+          '흉통이 좌측 팔, 어깨, 턱, 또는 등으로 방사되는 통증',
+          '식은땀과 함께 발생한 흉통',
+          '호흡곤란, 숨이 차거나 가쁜 호흡',
+          '실신 또는 의식 변화',
+          '갑자기 발생한 극심한 흉통 (대동맥 박리 의심)',
+          '심한 두근거림 또는 맥박이 불규칙함',
+          '구토와 함께 발생한 가슴/명치 통증',
+          '한쪽 다리의 부종/통증과 함께 발생한 흉통/호흡곤란 (폐색전증 의심)',
+          '운동 시 악화되는 흉통',
+          '특히 고혈압, 당뇨, 이상지질혈증, 흡연자, 가족력 있는 분: 모든 새로운 흉통에 대해 적극적 재내원',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 가슴 통증은 분초를 다투는 응급 상황일 수 있습니다.'
+        ]
+      },
+      {
+        id: 'panic', ko: '공황발작/과호흡 증후군', en: 'Panic attack / Hyperventilation syndrome', icd: 'F41.0',
+        tests: [
+          'ECG: NSR (가능 시 sinus tachycardia 외 특이 소견 없음)',
+          'Troponin: Negative',
+          'Chest PA: No active lesion',
+          'ABGA: Respiratory alkalosis (시행 시)',
+          'Glucose: WNL',
+          'Electrolyte: WNL',
+          'CBC, TSH: WNL',
+          'V/S: Stable'
+        ],
+        decisions: [
+          '안정/안심 (조용한 환경에서)',
+          '호흡 조절 교육 (복식호흡)',
+          '항불안제 PO/IV (Lorazepam 0.5-1mg / Alprazolam 0.25-0.5mg)',
+          '수액 처치 (NS 500mL IV)',
+          '응급실 경과 관찰'
+        ],
+        narrative: '환자는 응급실 내원 후 시행한 심전도, 심근효소, 흉부 X-ray, 혈액 검사상 심혈관 또는 호흡기, 대사성 원인을 시사하는 특이 소견 보이지 않았습니다. 활력징후 안정적이었으며, 증상의 양상(급격한 발작적 발생, 죽음의 공포, 과호흡, 사지 저림, 흉부 압박감) 및 검사 소견을 종합할 때 공황발작 또는 과호흡 증후군으로 판단되었습니다. 응급실에서 안정 및 호흡 조절 교육 시행하였고 [항불안제 투여 후] 증상 호전되어 정신건강의학과 외래 추적 관찰 권유와 함께 귀가 조치하였습니다.',
+        rx: [
+          '알프라졸람(Alprazolam) 0.25mg PO 1T tid prn (단기간만)',
+          '로라제팜(Lorazepam) 0.5mg PO 1T bid prn (단기간만)',
+          '프로프라놀롤(Propranolol) 10mg PO 1T tid prn (신체 증상)',
+          '에스시탈로프람(Escitalopram) 10mg PO 1T qd (예방, 정신과 처방)',
+          '파록세틴(Paroxetine) 20mg PO 1T qd (예방, 정신과 처방)'
+        ],
+        fu: '정신건강의학과 외래 방문 권유. 항불안제는 단기간만 복용하고 의존 위험 있어 정신과 의사와 상담 후 사용. 인지행동치료(CBT) 등 비약물 치료 효과적임 안내. 카페인/술/수면 부족 회피 권유.',
+        warn: [
+          '가슴 통증이 점점 심해지거나 좌측 팔/턱/등으로 방사 (심혈관 원인 감별)',
+          '식은땀과 함께 지속되는 흉통/호흡곤란',
+          '실신 또는 의식 변화',
+          '심한 어지러움 또는 안정 시에도 지속되는 호흡곤란',
+          '심장이 불규칙하게 뛰거나 매우 빠른 맥박이 지속',
+          '발열, 두통, 목이 뻣뻣함 동반',
+          '한쪽 팔/다리 마비, 감각 이상, 발음 어눌함',
+          '자해 또는 자살 충동이 발생하는 경우',
+          '약물 복용 후 심한 졸음, 호흡 억제, 의식 저하',
+          '발작이 더욱 빈번해지거나 일상생활이 불가능한 정도로 악화',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 자살 충동이 있다면 자살예방상담전화(1393) 또는 정신건강위기상담(1577-0199)으로 즉시 연락하세요.'
+        ]
+      },
+      {
+        id: 'syncope', ko: '미주신경성 실신', en: 'Vasovagal syncope', icd: 'R55',
+        tests: [
+          'ECG: NSR, no arrhythmia, no QT prolongation',
+          'Troponin: Negative',
+          'Glucose, Electrolyte: WNL',
+          'CBC: No anemia',
+          'Chest PA: No active lesion',
+          'Brain CT: No acute lesion (필요 시)',
+          'Orthostatic V/S: 의미있는 변화 없음',
+          'V/S: Stable post-event',
+          'Canadian Syncope Risk Score: Low risk'
+        ],
+        decisions: [
+          '수액 처치 (NS 1L IV)',
+          'ECG monitoring (응급실 경과 관찰)',
+          '실신 유발 인자 평가 및 교육',
+          '응급실 경과 관찰 (4시간 이상)'
+        ],
+        narrative: '환자는 응급실 내원 후 실신의 원인 감별을 위한 검사 시행하였습니다. 심전도상 부정맥, QT 연장, 허혈성 변화 등 심인성 실신을 시사하는 소견 보이지 않았고, 심근효소 음성이었으며 혈액 검사상 빈혈, 전해질 이상 등 의식 소실의 대사성 원인 보이지 않았습니다. 기립성 혈압 변화 의미있게 관찰되지 않았고, 신경학적 진찰 정상, Canadian Syncope Risk Score low risk로 평가되었습니다. 실신의 양상(전조 증상 있음, 유발 인자 명확, 빠른 회복) 및 검사 소견을 종합할 때 미주신경성 실신으로 판단되어 충분한 경과 관찰 후 활력징후 안정적임을 재확인하고 외래 추적 관찰 권유와 함께 귀가 조치하였습니다.',
+        rx: [
+          '충분한 수분 섭취 권유 (하루 2L 이상)',
+          '적절한 염분 섭취 권유',
+          '필요 시 미다드린(Midodrine) 2.5mg PO 1T tid (반복 시 내과 처방)',
+          '필요 시 플루드로코르티손(Fludrocortisone) 0.1mg PO 1T qd (반복 시 내과 처방)'
+        ],
+        fu: '실신 재발 시 또는 운동 중 실신/심계항진/가족력 있는 경우 순환기내과 외래 방문하여 24시간 holter, 심초음파 등 추가 평가. 충분한 수분/염분 섭취, 갑자기 일어서지 않기, 전조 증상 시 즉시 눕기 교육.',
+        warn: [
+          '운동 중에 발생한 실신 또는 의식 소실 (심인성 의심 - 응급)',
+          '실신과 함께 흉통, 두근거림, 호흡곤란',
+          '실신 후 회복이 더디거나 의식이 명료하지 않음',
+          '경련을 동반한 의식 소실',
+          '실신 시 손상(두부 외상, 골절) 발생',
+          '편측 마비, 감각 이상, 말 어눌함, 시야 이상 (뇌졸중 감별)',
+          '심한 두통, 발열, 목이 뻣뻣함',
+          '심한 어지러움이 지속되거나 일어설 수 없음',
+          '소변/대변 실금, 혀를 깨문 흔적 (경련성 발작 감별)',
+          '실신의 빈도가 증가하거나 전조 증상 없이 발생',
+          '가족 중 젊은 나이에 돌연사한 분이 있는 경우',
+          '심장 질환이나 부정맥 병력이 있는 분',
+          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+        ]
+      }
+    ]
+  }
+};
+
+// ============================================================
+// 상태
+// ============================================================
+let state = {
+  category: null,
+  disease: null,
+  tests: new Set(),
+  decisions: new Set(),
+  narrative: '',
+  rx: new Set(),
+  fu: '',
+  warn: new Set(),
+  customTests: [],
+  customDecisions: [],
+  customRx: [],
+  customWarn: []
+};
+
+// ============================================================
+// 렌더링
+// ============================================================
+function renderCats() {
+  const el = document.getElementById('cats');
+  el.innerHTML = Object.entries(DATA).map(([key, cat]) =>
+    `<button class="cat ${state.category === key ? 'active' : ''}" onclick="selectCat('${key}')">${cat.name}</button>`
+  ).join('');
+}
+
+function renderDiseases() {
+  const el = document.getElementById('diseases');
+  if (!state.category) {
+    el.innerHTML = '<div class="empty"><div class="e-icon">↑</div>먼저 대분류를 선택하세요</div>';
+    return;
+  }
+  const diseases = DATA[state.category].diseases;
+  el.innerHTML = diseases.map(d =>
+    `<button class="disease ${state.disease === d.id ? 'active' : ''}" onclick="selectDisease('${d.id}')">
+      <div class="dko">${d.ko}</div>
+      <div class="den">${d.en.length > 36 ? d.en.slice(0, 34) + '…' : d.en} · ${d.icd}</div>
+    </button>`
+  ).join('');
+}
+
+function renderForm() {
+  const el = document.getElementById('form-area');
+  if (!state.disease) {
+    el.innerHTML = '<div class="empty" style="margin-top:40px;"><div class="e-icon">📋</div>진단을 선택하면<br>퇴원기록지 양식이 나타납니다</div>';
+    return;
+  }
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  el.innerHTML = `
+    <div class="dx-card">
+      <div class="dx-ko">${d.ko}<span class="dx-icd">${d.icd}</span></div>
+      <div class="dx-en">${d.en}</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">시행한 검사 <span class="hint">탭하여 선택 (기본 선택됨)</span></div>
+      <div class="chips">
+        ${d.tests.map(t => `<span class="chip ${state.tests.has(t) ? 'on' : ''}" onclick="toggleSet('tests', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
+        ${state.customTests.map((t, i) => `<span class="chip on" onclick="removeCustom('customTests', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="추가 검사 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customTests', this)">
+        <button onclick="addCustomBtn('customTests', this.previousElementSibling)">추가</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">⚡ 응급실 처치 (결정 사항) <span class="hint">시행한 것만 선택</span></div>
+      <div class="chips">
+        ${d.decisions.map(t => `<span class="chip tx ${state.decisions.has(t) ? 'on' : ''}" onclick="toggleSet('decisions', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
+        ${state.customDecisions.map((t, i) => `<span class="chip tx on" onclick="removeCustom('customDecisions', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="추가 처치 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customDecisions', this)">
+        <button onclick="addCustomBtn('customDecisions', this.previousElementSibling)">추가</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📝 진료 경과 / 퇴원 시 상태
+        <span class="field-actions"><button class="reset-btn" onclick="resetNarrative()">🔄 템플릿 다시 불러오기</button></span>
+      </div>
+      <textarea class="narrative" placeholder="진료 경과 요약" oninput="state.narrative=this.value">${state.narrative || d.narrative}</textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-label">💊 퇴원 처방 (성분명) <span class="hint">필요한 것만 선택</span></div>
+      <div class="chips">
+        ${d.rx.map(t => `<span class="chip rx ${state.rx.has(t) ? 'on' : ''}" onclick="toggleSet('rx', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
+        ${state.customRx.map((t, i) => `<span class="chip rx on" onclick="removeCustom('customRx', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="추가 처방 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customRx', this)">
+        <button onclick="addCustomBtn('customRx', this.previousElementSibling)">추가</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📅 추후 진료 계획
+        <span class="field-actions"><button class="reset-btn" onclick="resetFu()">🔄 기본값</button></span>
+      </div>
+      <textarea oninput="state.fu=this.value">${state.fu || d.fu}</textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-label">⚠️ 재내원 주의사항 <span class="hint">기본 선택됨, 환자 맞춤 수정</span></div>
+      <div class="warn-note">의료법적 방어를 위해 가능한 모든 항목을 포함하는 것이 권장됩니다. 환자 상황에 맞춰 조정하세요.</div>
+      <div class="chips">
+        ${d.warn.map(t => `<span class="chip warn ${state.warn.has(t) ? 'on' : ''}" onclick="toggleSet('warn', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
+        ${state.customWarn.map((t, i) => `<span class="chip warn on" onclick="removeCustom('customWarn', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="추가 주의사항 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customWarn', this)">
+        <button onclick="addCustomBtn('customWarn', this.previousElementSibling)">추가</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">📋 미리보기 <span class="hint">복사 시 이 형식으로</span></div>
+      <div class="preview" id="preview">${escHtml(buildText())}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 이벤트
+// ============================================================
+function selectCat(key) {
+  state.category = key;
+  state.disease = null;
+  clearForm();
+  renderCats();
+  renderDiseases();
+  renderForm();
+}
+
+function selectDisease(id) {
+  state.disease = id;
+  const d = DATA[state.category].diseases.find(x => x.id === id);
+  state.tests = new Set(d.tests);
+  state.decisions = new Set();   // 응급실 처치는 의사가 시행한 것만 직접 선택
+  state.rx = new Set();          // 처방도 직접 선택
+  state.warn = new Set(d.warn);  // 주의사항은 기본 모두 선택 (방어적)
+  state.narrative = d.narrative;
+  state.fu = d.fu;
+  state.customTests = [];
+  state.customDecisions = [];
+  state.customRx = [];
+  state.customWarn = [];
+  renderDiseases();
+  renderForm();
+}
+
+function toggleSet(setName, val) {
+  if (state[setName].has(val)) state[setName].delete(val);
+  else state[setName].add(val);
+  renderForm();
+}
+
+function addCustomBtn(listName, inputEl) {
+  const v = (inputEl.value || '').trim();
+  if (v) {
+    state[listName].push(v);
+    renderForm();
+  }
+}
+
+function removeCustom(listName, idx) {
+  state[listName].splice(idx, 1);
+  renderForm();
+}
+
+function resetNarrative() {
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  state.narrative = d.narrative;
+  renderForm();
+}
+
+function resetFu() {
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  state.fu = d.fu;
+  renderForm();
+}
+
+function clearForm() {
+  state.tests = new Set();
+  state.decisions = new Set();
+  state.rx = new Set();
+  state.warn = new Set();
+  state.narrative = '';
+  state.fu = '';
+  state.customTests = [];
+  state.customDecisions = [];
+  state.customRx = [];
+  state.customWarn = [];
+}
+
+function resetAll() {
+  if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
+  state.category = null;
+  state.disease = null;
+  clearForm();
+  renderCats();
+  renderDiseases();
+  renderForm();
+}
+
+// ============================================================
+// 텍스트 생성
+// ============================================================
+function buildText() {
+  if (!state.disease) return '';
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  const lines = [];
+
+  lines.push('[퇴원진단]');
+  lines.push(`- ${d.ko} (${d.en}, ${d.icd})`);
+  lines.push('');
+
+  const allTests = [...state.tests, ...state.customTests];
+  if (allTests.length) {
+    lines.push('[시행한 검사]');
+    allTests.forEach(t => lines.push(`- ${t}`));
+    lines.push('');
+  }
+
+  const allDecisions = [...state.decisions, ...state.customDecisions];
+  if (allDecisions.length) {
+    lines.push('[응급실 처치]');
+    allDecisions.forEach(t => lines.push(`- ${t}`));
+    lines.push('');
+  }
+
+  const narr = (state.narrative || d.narrative).trim();
+  if (narr) {
+    lines.push('[진료 경과 및 퇴원 시 상태]');
+    lines.push(narr);
+    lines.push('');
+  }
+
+  const allRx = [...state.rx, ...state.customRx];
+  if (allRx.length) {
+    lines.push('[퇴원 처방]');
+    allRx.forEach((r, i) => lines.push(`${i + 1}. ${r}`));
+    lines.push('');
+  }
+
+  const fuText = (state.fu || d.fu).trim();
+  if (fuText) {
+    lines.push('[추후 진료 계획]');
+    lines.push(fuText);
+    lines.push('');
+  }
+
+  const allWarn = [...state.warn, ...state.customWarn];
+  if (allWarn.length) {
+    lines.push('[재내원 주의사항]');
+    lines.push('아래와 같은 증상이 발생할 경우 즉시 응급실로 재내원하시거나 119에 연락하시기 바랍니다.');
+    allWarn.forEach(w => lines.push(`- ${w}`));
+    lines.push('');
+    lines.push('※ 본 안내사항은 진료 시점의 평가에 따른 것이며, 증상의 변화나 새로운 증상 발생 시 언제든지 의료기관 방문이 필요합니다.');
+  }
+
+  return lines.join('\n');
+}
+
+// ============================================================
+// 복사
+// ============================================================
+function copyText() {
+  const text = buildText();
+  if (!text) {
+    showToast('진단을 먼저 선택하세요', true);
+    return;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast('✓ 복사되었습니다'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✓ 복사되었습니다');
+  }
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  if (isError) {
+    t.style.background = 'var(--red)';
+    t.style.color = '#fff';
+    t.style.boxShadow = '0 8px 24px rgba(255, 77, 106, 0.3)';
+  } else {
+    t.style.background = 'var(--green)';
+    t.style.color = '#042918';
+    t.style.boxShadow = '0 8px 24px rgba(0, 217, 126, 0.3)';
+  }
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ============================================================
+// 유틸
+// ============================================================
+function escAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function updateTime() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('time-now').textContent =
+    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
+// ============================================================
+// 초기화
+// ============================================================
+renderCats();
+renderDiseases();
+renderForm();
+updateTime();
+setInterval(updateTime, 30000);
+</script>
+</body>
+</html>
