@@ -61,7 +61,7 @@
     min-height: 100vh;
     background-image: radial-gradient(ellipse at top, rgba(255, 141, 181, 0.06), transparent 60%);
   }
-  .header { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 16px 4px; }
+  .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 4px 4px 16px 4px; }
   .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 6px; }
   .header h1 .heart { font-size: 14px; }
   .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 4px; }
@@ -156,7 +156,7 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
 
   /* 빈 상태 */
-  .empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; }
+  .empty { grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; }
   .empty .e-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
 
   /* 진단 카드 (선택된 질환) */
