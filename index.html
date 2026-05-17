@@ -66,7 +66,11 @@
   .header h1 .heart { font-size: 14px; }
   .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 4px; }
   .header .sub { font-size: 10.5px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; }
-  .header-right { display: flex; align-items: center; gap: 10px; }
+  .header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .share-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: linear-gradient(135deg, var(--purple-soft), rgba(136, 200, 255, 0.15)); border: 0.5px solid var(--purple); color: var(--purple); cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
+  .share-btn:hover { background: var(--purple); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200, 165, 255, 0.35); }
+  .share-btn:active { transform: scale(0.95); }
+  .share-btn .share-txt { font-family: var(--mono); letter-spacing: -0.02em; }
   .blog-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: linear-gradient(135deg, var(--accent-soft), rgba(200, 165, 255, 0.15)); border: 0.5px solid var(--accent); color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
   .blog-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 141, 181, 0.35); }
   .blog-btn:active { transform: scale(0.95); }
@@ -182,6 +186,9 @@
 <div class="header">
   <h1><span class="heart">🩺</span>퇴원기록지 도우미 <span class="ver">v3.0</span></h1>
   <div class="header-right">
+    <button class="share-btn" onclick="shareApp()" title="앱 링크 공유">
+      <span>💌</span><span class="share-txt">공유</span>
+    </button>
     <a class="blog-btn" href="https://blog.naver.com/hyinuyu" target="_blank" rel="noopener" title="작성자 블로그 ♡">
       <span>💗</span><span class="blog-txt">blog</span>
     </a>
@@ -1727,7 +1734,54 @@ function buildText() {
 }
 
 // ============================================================
-// 복사
+// 공유 (Web Share API + 클립보드 fallback)
+// ============================================================
+async function shareApp() {
+  const url = window.location.href;
+  const shareData = {
+    title: '퇴원기록지 도우미',
+    text: '응급실 퇴원기록지 빠른 작성 도구 🩺💗',
+    url: url
+  };
+
+  // 모바일: 네이티브 공유 시트 (카톡/메시지 등 바로 선택 가능)
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      return; // 성공
+    } catch (e) {
+      if (e.name === 'AbortError') return; // 사용자가 공유 취소
+      // 그 외 에러는 클립보드 fallback
+    }
+  }
+
+  // PC/지원 안되는 브라우저: 클립보드 복사
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('🔗 링크가 복사되었어요!');
+      return;
+    } catch (e) {}
+  }
+
+  // 구형 브라우저 fallback
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('🔗 링크가 복사되었어요!');
+  } catch (e) {
+    showToast('복사 실패', true);
+  }
+  document.body.removeChild(ta);
+}
+
+// ============================================================
+// 복사 (퇴원기록지 본문)
 // ============================================================
 function copyText() {
   const text = buildText();
