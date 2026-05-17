@@ -2,99 +2,194 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>퇴원기록지 도우미 v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>퇴원기록지 도우미</title>
+
+<!-- PWA (홈화면 추가 시 앱처럼 동작) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="퇴원기록지">
+<meta name="application-name" content="퇴원기록지">
+<meta name="theme-color" content="#ff8db5">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
   :root {
-    --bg: #0b0f17;
-    --bg2: #0f1623;
-    --bg3: #141d30;
-    --card: #161f33;
-    --card-hover: #1a2540;
-    --border: #1e2d4a;
-    --border2: #253652;
-    --accent: #4d9eff;
-    --accent2: #185FA5;
-    --accent-soft: rgba(77, 158, 255, 0.12);
-    --green: #00d97e;
-    --red: #ff4d6a;
-    --yellow: #ffc14d;
-    --orange: #ff8a3d;
-    --text: #e5edff;
-    --text2: #8da3c7;
-    --text3: #5d7090;
+    /* 귀염뽀짝 파스텔 다크 테마 ♡ */
+    --bg: #1a1525;
+    --bg2: #221d2e;
+    --bg3: #2a2438;
+    --card: #2a2438;
+    --card-hover: #332b48;
+    --border: #3a3151;
+    --border2: #483e64;
+    --accent: #ff8db5;          /* 메인 핑크 */
+    --accent2: #e879a6;          /* 진한 핑크 */
+    --accent-soft: rgba(255, 141, 181, 0.14);
+    --green: #7ee8c9;            /* 민트 */
+    --green-soft: rgba(126, 232, 201, 0.12);
+    --red: #ff7e8a;
+    --red-soft: rgba(255, 126, 138, 0.12);
+    --yellow: #ffd680;
+    --yellow-soft: rgba(255, 214, 128, 0.12);
+    --purple: #c8a5ff;
+    --purple-soft: rgba(200, 165, 255, 0.12);
+    --sky: #88c8ff;
+    --sky-soft: rgba(136, 200, 255, 0.12);
+    --text: #f5ecf7;
+    --text2: #b8a8c8;
+    --text3: #7d6e94;
     --mono: 'JetBrains Mono', monospace;
     --sans: 'Noto Sans KR', -apple-system, sans-serif;
+    --shadow-cute: 0 4px 20px rgba(255, 141, 181, 0.08);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.5; }
-  body { padding: 12px 12px 100px 12px; max-width: 760px; margin: 0 auto; min-height: 100vh; }
-  .header { display: flex; align-items: baseline; justify-content: space-between; padding: 8px 4px 14px 4px; }
-  .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
-  .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 6px; }
-  .header .sub { font-size: 11px; color: var(--text3); font-family: var(--mono); }
-  .section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 6px 4px; font-weight: 600; }
-  .cats { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 6px 0; scrollbar-width: none; }
-  .cats::-webkit-scrollbar { display: none; }
-  .cat { flex-shrink: 0; padding: 8px 14px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: var(--sans); white-space: nowrap; }
-  .cat:hover { background: var(--card); color: var(--text); }
-  .cat.active { background: var(--accent2); color: #fff; border-color: var(--accent2); font-weight: 500; }
-  .diseases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
-  .disease { padding: 10px 10px; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: left; }
-  .disease:hover { background: var(--card-hover); border-color: var(--border2); }
-  .disease.active { background: var(--accent-soft); border-color: var(--accent); }
-  .disease .dko { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
-  .disease .den { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+  body {
+    padding: 14px 14px 110px 14px;
+    padding-top: max(14px, env(safe-area-inset-top));
+    padding-bottom: max(110px, calc(110px + env(safe-area-inset-bottom)));
+    max-width: 760px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-image: radial-gradient(ellipse at top, rgba(255, 141, 181, 0.06), transparent 60%);
+  }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 16px 4px; }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 6px; }
+  .header h1 .heart { font-size: 14px; }
+  .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 4px; }
+  .header .sub { font-size: 10.5px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .blog-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: linear-gradient(135deg, var(--accent-soft), rgba(200, 165, 255, 0.15)); border: 0.5px solid var(--accent); color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
+  .blog-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 141, 181, 0.35); }
+  .blog-btn:active { transform: scale(0.95); }
+  .blog-btn .blog-txt { font-family: var(--mono); letter-spacing: -0.02em; }
+
+  .section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 8px 4px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .section-label .tag { display: inline-block; padding: 2px 7px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 9.5px; letter-spacing: 0.05em; text-transform: none; font-weight: 500; }
+
+  /* 카테고리 - 여러 줄로 wrap, 카테고리별 색상 */
+  .cats { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 6px 0; }
+  .cat { padding: 9px 14px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); white-space: nowrap; font-weight: 500; }
+  .cat:hover { background: var(--card); color: var(--text); transform: translateY(-1px); }
+  .cat:active { transform: scale(0.96); }
+  .cat.active { color: #fff; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transform: translateY(-1px); }
+  .cat.active.c-resp { background: linear-gradient(135deg, #7ee8c9, #5fd4b0); border-color: #7ee8c9; }
+  .cat.active.c-gi { background: linear-gradient(135deg, #ffb088, #ff9670); border-color: #ffb088; }
+  .cat.active.c-trauma { background: linear-gradient(135deg, #ff8db5, #e879a6); border-color: #ff8db5; }
+  .cat.active.c-neuro { background: linear-gradient(135deg, #c8a5ff, #b088f0); border-color: #c8a5ff; }
+  .cat.active.c-msk { background: linear-gradient(135deg, #ffd680, #ffc24d); border-color: #ffd680; }
+  .cat.active.c-gu { background: linear-gradient(135deg, #88c8ff, #6db4f5); border-color: #88c8ff; }
+  .cat.active.c-skin { background: linear-gradient(135deg, #88e8b0, #6fd498); border-color: #88e8b0; }
+  .cat.active.c-cv { background: linear-gradient(135deg, #ff8aaa, #f06b91); border-color: #ff8aaa; }
+
+  /* 질환 카드 */
+  .diseases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .disease { padding: 12px 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: left; }
+  .disease:hover { background: var(--card-hover); border-color: var(--border2); transform: translateY(-2px); }
+  .disease:active { transform: scale(0.97); }
+  .disease.active { background: var(--accent-soft); border-color: var(--accent); box-shadow: var(--shadow-cute); }
+  .disease.active .dko { color: var(--accent); }
+  .disease .dko { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+  .disease .den { font-size: 9.5px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; line-height: 1.3; }
+
+  /* 폼 */
   .form { margin-top: 16px; }
   .field { margin-bottom: 14px; }
-  .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; font-weight: 600; padding: 0 4px; gap: 8px; }
-  .field-label .hint { font-size: 10px; color: var(--text3); text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .field-label .reset-btn { background: transparent; border: 0.5px solid var(--border); color: var(--text3); font-size: 10px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-family: var(--sans); text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .field-label .reset-btn:hover { color: var(--text2); border-color: var(--border2); }
-  input[type="text"], textarea { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--text); font-family: var(--sans); resize: vertical; line-height: 1.6; transition: border 0.15s; }
-  input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--bg3); }
+  .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 7px; padding: 0 4px; gap: 8px; font-weight: 600; }
+  .field-label .ico { margin-right: 4px; }
+  .field-label .hint { font-size: 10.5px; color: var(--text3); font-weight: 400; }
+  .field-label .reset-btn { background: var(--bg2); border: 0.5px solid var(--border); color: var(--text3); font-size: 10.5px; padding: 4px 10px; border-radius: 999px; cursor: pointer; font-family: var(--sans); font-weight: 500; transition: all 0.15s; }
+  .field-label .reset-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+  input[type="text"], textarea { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 11px 14px; font-size: 13.5px; color: var(--text); font-family: var(--sans); resize: vertical; line-height: 1.65; transition: all 0.15s; }
+  input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--bg3); box-shadow: 0 0 0 3px var(--accent-soft); }
   textarea { min-height: 110px; }
-  textarea.narrative { min-height: 130px; line-height: 1.65; }
-  .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 2px 0; }
-  .chip { padding: 6px 11px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; user-select: none; transition: all 0.12s; font-family: var(--sans); line-height: 1.35; }
+  textarea.narrative { min-height: 150px; line-height: 1.7; }
+
+  /* 변수 칩 선택기 (narrative placeholders 자동 채우기) */
+  .vars-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+  .vars-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .var-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; flex-wrap: wrap; }
+  .var-row + .var-row { border-top: 0.5px solid var(--border); padding-top: 8px; margin-top: 2px; }
+  .var-label { font-size: 11px; color: var(--text2); min-width: 58px; padding-top: 5px; font-weight: 500; }
+  .var-chips { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+  .var-chip { padding: 4px 11px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg); color: var(--text2); font-size: 11.5px; cursor: pointer; transition: all 0.12s; font-family: var(--sans); white-space: nowrap; }
+  .var-chip:hover { color: var(--text); border-color: var(--border2); }
+  .var-chip:active { transform: scale(0.94); }
+  .var-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; box-shadow: 0 2px 8px rgba(255, 141, 181, 0.3); }
+
+  /* 일반 칩 - 카테고리별 색상 */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0; }
+  .chip { padding: 7px 12px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; user-select: none; transition: all 0.15s; font-family: var(--sans); line-height: 1.4; font-weight: 500; }
   .chip:hover { color: var(--text); border-color: var(--border2); }
-  .chip.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-  .chip.warn.on { background: rgba(255, 77, 106, 0.12); color: var(--red); border-color: var(--red); }
-  .chip.tx.on { background: rgba(255, 193, 77, 0.12); color: var(--yellow); border-color: var(--yellow); }
-  .chip.rx.on { background: rgba(0, 217, 126, 0.10); color: var(--green); border-color: var(--green); }
-  .chip .x { color: var(--text3); margin-right: 4px; }
-  .bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 12px 12px 12px; background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 8px; max-width: 760px; margin: 0 auto; z-index: 10; }
-  .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--sans); letter-spacing: -0.01em; transition: all 0.15s; }
-  .btn-primary { background: var(--accent2); color: #fff; }
-  .btn-primary:hover { background: var(--accent); }
-  .btn-primary:active { transform: scale(0.98); }
+  .chip:active { transform: scale(0.96); }
+  .chip.on { background: var(--sky-soft); color: var(--sky); border-color: var(--sky); }
+  .chip.tx.on { background: var(--yellow-soft); color: var(--yellow); border-color: var(--yellow); }
+  .chip.rx.on { background: var(--green-soft); color: var(--green); border-color: var(--green); }
+  .chip.warn.on { background: var(--red-soft); color: var(--red); border-color: var(--red); }
+  .chip .x { color: var(--text3); margin-right: 4px; font-size: 10px; }
+
+  /* 하단 액션 바 */
+  .bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 14px 14px 14px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 65%, rgba(26, 21, 37, 0.85) 85%, transparent); display: flex; gap: 8px; max-width: 760px; margin: 0 auto; z-index: 10; backdrop-filter: blur(8px); }
+  .btn { flex: 1; padding: 15px; border-radius: 14px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--sans); letter-spacing: -0.01em; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 4px 16px rgba(255, 141, 181, 0.35); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255, 141, 181, 0.45); }
+  .btn-primary:active { transform: scale(0.97); }
   .btn-secondary { background: var(--card); color: var(--text2); border: 0.5px solid var(--border); flex: 0 0 100px; }
   .btn-secondary:hover { color: var(--text); background: var(--card-hover); }
-  .toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--green); color: #042918; padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 217, 126, 0.3); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+  .btn-secondary:active { transform: scale(0.97); }
+
+  /* 토스트 */
+  .toast { position: fixed; top: 16px; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--green), #5fd4b0); color: #0d3528; padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(126, 232, 201, 0.35); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
+
+  /* 빈 상태 */
   .empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; }
-  .empty .e-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.5; }
-  .dx-card { background: linear-gradient(135deg, var(--accent-soft), transparent); border: 0.5px solid var(--accent); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-  .dx-card .dx-ko { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
-  .dx-card .dx-en { font-size: 12px; color: var(--text2); font-family: var(--mono); }
-  .dx-card .dx-icd { display: inline-block; font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--mono); font-weight: 500; }
-  .add-row { display: flex; gap: 6px; margin-top: 6px; }
-  .add-row input { flex: 1; font-size: 12px; padding: 6px 10px; }
-  .add-row button { background: var(--accent2); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
-  .preview { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.65; max-height: 320px; overflow-y: auto; }
-  .warn-note { background: rgba(255, 77, 106, 0.08); border-left: 3px solid var(--red); color: var(--text2); font-size: 11px; padding: 8px 10px; border-radius: 4px; margin-bottom: 6px; line-height: 1.5; }
+  .empty .e-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+
+  /* 진단 카드 (선택된 질환) */
+  .dx-card { background: linear-gradient(135deg, var(--accent-soft), transparent), var(--card); border: 0.5px solid var(--accent); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; box-shadow: var(--shadow-cute); }
+  .dx-card .dx-ko { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .dx-card .dx-en { font-size: 11.5px; color: var(--text2); font-family: var(--mono); letter-spacing: -0.02em; }
+  .dx-card .dx-icd { display: inline-block; font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 999px; margin-left: 6px; font-family: var(--mono); font-weight: 600; vertical-align: middle; }
+
+  /* 커스텀 추가 입력 */
+  .add-row { display: flex; gap: 6px; margin-top: 8px; }
+  .add-row input { flex: 1; font-size: 12px; padding: 8px 12px; border-radius: 10px; }
+  .add-row button { background: var(--accent-soft); color: var(--accent); border: 0.5px solid var(--accent); padding: 8px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; font-family: var(--sans); white-space: nowrap; font-weight: 600; transition: all 0.15s; }
+  .add-row button:hover { background: var(--accent); color: #fff; }
+  .add-row button:active { transform: scale(0.96); }
+
+  /* 미리보기 */
+  .preview { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.7; max-height: 320px; overflow-y: auto; }
+  .preview::-webkit-scrollbar { width: 6px; }
+  .preview::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* 경고 메모 */
+  .warn-note { background: var(--red-soft); border-left: 3px solid var(--red); color: var(--text2); font-size: 11px; padding: 9px 11px; border-radius: 8px; margin-bottom: 8px; line-height: 1.55; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>퇴원기록지 도우미 <span class="ver">v2.0</span></h1>
-  <span class="sub" id="time-now"></span>
+  <h1><span class="heart">🩺</span>퇴원기록지 도우미 <span class="ver">v3.0</span></h1>
+  <div class="header-right">
+    <a class="blog-btn" href="https://blog.naver.com/hyinuyu" target="_blank" rel="noopener" title="작성자 블로그 ♡">
+      <span>💗</span><span class="blog-txt">blog</span>
+    </a>
+    <span class="sub" id="time-now"></span>
+  </div>
 </div>
 
-<div class="section-label">대분류</div>
+<div class="section-label">대분류 <span class="tag">탭하여 선택</span></div>
 <div class="cats" id="cats"></div>
 
 <div class="section-label">진단 선택</div>
@@ -501,7 +596,13 @@ const DATA = {
           'Tetanus toxoid 0.5mL IM 접종',
           'TIG (Tetanus immune globulin) IM 접종 (오염 상처)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 손상 부위 진찰상 [부위] 약 [길이]cm의 단순 열상이 확인되었습니다. 해당 부위 영상 검사상 골절 및 이물질 잔존 소견 없었으며, 원위부 운동/감각/순환 평가상 신경/혈관/건 손상 의심 소견 없었습니다. 2% 리도카인으로 국소 마취 후 생리식염수로 충분히 세척하였고, [N] stitch 봉합 시행 후 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 [Tdap booster 시행/예방접종력 적절] 처리하였으며, 상처 관리 교육 및 발사 일정 안내 후 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 손상 부위 진찰상 {site} 약 {length}의 단순 열상이 확인되었습니다. 해당 부위 영상 검사상 골절 및 이물질 잔존 소견 없었으며, 원위부 운동/감각/순환 평가상 신경/혈관/건 손상 의심 소견 없었습니다. 2% 리도카인으로 국소 마취 후 생리식염수로 충분히 세척하였고, {sutures}-stitch 봉합 시행 후 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 {tetanus} 처리하였으며, 상처 관리 교육 및 발사 일정 안내 후 귀가 조치하였습니다.',
+        vars: [
+          { key: 'site', label: '부위', options: ['안면', '두피', '이마', '뺨', '턱', '경부', '체간', '상지', '손등', '손바닥', '손가락', '하지', '무릎', '발등', '발가락'] },
+          { key: 'length', label: '길이', options: ['1cm', '1.5cm', '2cm', '2.5cm', '3cm', '4cm', '5cm', '7cm', '10cm'] },
+          { key: 'sutures', label: '봉합수', options: ['2', '3', '4', '5', '6', '7', '8', '10', '12', '15'] },
+          { key: 'tetanus', label: '파상풍', options: ['Tdap booster 시행', '예방접종력 적절하여 추가 접종 불필요'] }
+        ],
         rx: [
           '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
@@ -539,7 +640,10 @@ const DATA = {
           '압박 붕대 적용',
           '거상 권유'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [부위] 부종 및 압통, 반상출혈 확인되었습니다. 해당 부위 X-ray상 골절 소견 보이지 않았고, 신경학적 진찰상 원위부 운동/감각/순환 정상이었으며 구획증후군을 시사하는 소견은 관찰되지 않았습니다. 정맥 진통제 투여 및 RICE 처치 시행 후 통증 일부 호전되어, 경구 약제 처방 및 보존적 치료(휴식/냉찜질/압박/거상) 교육 후 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 {site} 부종 및 압통, 반상출혈 확인되었습니다. 해당 부위 X-ray상 골절 소견 보이지 않았고, 신경학적 진찰상 원위부 운동/감각/순환 정상이었으며 구획증후군을 시사하는 소견은 관찰되지 않았습니다. 정맥 진통제 투여 및 RICE 처치 시행 후 통증 일부 호전되어, 경구 약제 처방 및 보존적 치료(휴식/냉찜질/압박/거상) 교육 후 귀가 조치하였습니다.',
+        vars: [
+          { key: 'site', label: '부위', options: ['안면', '두피', '경부', '흉부', '복부', '등', '둔부', '어깨', '상완', '전완', '손', '대퇴', '슬관절', '하퇴', '족관절', '발'] }
+        ],
         rx: [
           '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 3-5d',
@@ -578,7 +682,10 @@ const DATA = {
           '거상 권유',
           '목발 처방 (체중 부하 제한)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [관절] 부위 부종, 압통, 운동 제한 확인되었습니다. 해당 관절 X-ray상 골절 및 탈구 소견 없었으며, 신경학적 진찰상 원위부 운동/감각/순환 정상이었습니다. 인대 손상 의심되어 정맥 진통제 투여 및 RICE 처치, 부목/탄력 붕대 고정 시행 후 통증 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다. 환자에게 RICE 원칙 및 체중 부하 제한 교육하였고, 정형외과 외래 추적 관찰 권유하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 {joint} 부위 부종, 압통, 운동 제한 확인되었습니다. 해당 관절 X-ray상 골절 및 탈구 소견 없었으며, 신경학적 진찰상 원위부 운동/감각/순환 정상이었습니다. 인대 손상 의심되어 정맥 진통제 투여 및 RICE 처치, 부목/탄력 붕대 고정 시행 후 통증 호전되어 경구 약제 처방과 함께 귀가 조치하였습니다. 환자에게 RICE 원칙 및 체중 부하 제한 교육하였고, 정형외과 외래 추적 관찰 권유하였습니다.',
+        vars: [
+          { key: 'joint', label: '관절', options: ['족관절(발목)', '슬관절(무릎)', '수관절(손목)', '주관절(팔꿈치)', '견관절(어깨)', '경부', '요추', '수지(손가락)', '족지(발가락)'] }
+        ],
         rx: [
           '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 7d',
@@ -617,7 +724,10 @@ const DATA = {
           '두피 열상 시 봉합 시행',
           'Tetanus toxoid 0.5mL IM 접종 (열상 동반 시)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며 의식 명료(GCS 15)하였고, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 모두 정상이었습니다. 두부 CT 촬영상 두개 내 급성 출혈, 골절, 뇌부종 등 외상성 병변 보이지 않았으며, 외상성 두부 손상의 영상학적 소견 없음을 확인하였습니다. 응급실에서 [N]시간 경과 관찰 동안 의식 변화나 신경학적 증상 악화 없음을 재확인하였고, 환자 및 보호자에게 두부 외상 후 관찰 사항 및 재내원 기준 교육 후 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며 의식 명료(GCS 15)하였고, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 모두 정상이었습니다. 두부 CT 촬영상 두개 내 급성 출혈, 골절, 뇌부종 등 외상성 병변 보이지 않았으며, 외상성 두부 손상의 영상학적 소견 없음을 확인하였습니다. 응급실에서 {duration} 경과 관찰 동안 의식 변화나 신경학적 증상 악화 없음을 재확인하였고, 환자 및 보호자에게 두부 외상 후 관찰 사항 및 재내원 기준 교육 후 귀가 조치하였습니다.',
+        vars: [
+          { key: 'duration', label: '관찰시간', options: ['2시간', '3시간', '4시간', '6시간', '8시간'] }
+        ],
         rx: [
           '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
@@ -657,7 +767,12 @@ const DATA = {
           '항생제 도포제 (Silver sulfadiazine cream)',
           'Tetanus toxoid 0.5mL IM 접종'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 [부위] 약 TBSA [○]% 1-2도 화상(표재성 부분층) 확인되었습니다. 흡입 손상, 안면/회음부/관절 침범, 환상 화상 등 입원이 필요한 중증 화상 소견 보이지 않았으며, 동반 외상 없음을 확인하였습니다. 충분한 냉수 세척 시행 후 정맥 진통제 투여하였고, 수포 보존하며 화상용 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 [Tdap booster 시행/예방접종력 적절] 처리하였으며, 화상 관리 교육 및 외래 추적 관찰 안내 후 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 진찰상 {site} 약 TBSA {tbsa} 1-2도 화상(표재성 부분층) 확인되었습니다. 흡입 손상, 안면/회음부/관절 침범, 환상 화상 등 입원이 필요한 중증 화상 소견 보이지 않았으며, 동반 외상 없음을 확인하였습니다. 충분한 냉수 세척 시행 후 정맥 진통제 투여하였고, 수포 보존하며 화상용 드레싱 적용하였습니다. 파상풍 예방접종력 확인 후 {tetanus} 처리하였으며, 화상 관리 교육 및 외래 추적 관찰 안내 후 귀가 조치하였습니다.',
+        vars: [
+          { key: 'site', label: '부위', options: ['안면', '경부', '흉부', '복부', '등', '상지', '전완', '손', '대퇴', '하퇴', '발', '둔부'] },
+          { key: 'tbsa', label: 'TBSA', options: ['<1%', '1%', '2%', '3%', '5%', '7%', '9%'] },
+          { key: 'tetanus', label: '파상풍', options: ['Tdap booster 시행', '예방접종력 적절하여 추가 접종 불필요'] }
+        ],
         rx: [
           '아세트아미노펜(Acetaminophen) 500mg PO 1T tid prn',
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc',
@@ -795,7 +910,10 @@ const DATA = {
           'Epley maneuver (이석정복술) 시행',
           '응급실 경과 관찰 (증상 호전 확인)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 정상이었고 HINTS 검사상 말초성 현훈에 합당한 패턴이었습니다. Dix-Hallpike 검사상 [해당 측] 양성 소견 보였으며, 중추성 현훈을 시사하는 신경학적 결손 보이지 않았습니다. 양성돌발성체위성현훈으로 진단되어 Epley maneuver 시행 및 정맥 진토제 투여 후 현훈 및 오심 호전되었습니다. 활력징후 안정적이며 자가 보행 가능한 상태로 회복되어 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이며, 신경학적 진찰상 뇌신경/운동/감각/소뇌 기능 정상이었고 HINTS 검사상 말초성 현훈에 합당한 패턴이었습니다. Dix-Hallpike 검사상 {side} 양성 소견 보였으며, 중추성 현훈을 시사하는 신경학적 결손 보이지 않았습니다. 양성돌발성체위성현훈으로 진단되어 Epley maneuver 시행 및 정맥 진토제 투여 후 현훈 및 오심 호전되었습니다. 활력징후 안정적이며 자가 보행 가능한 상태로 회복되어 경구 약제 처방과 함께 귀가 조치하였습니다.',
+        vars: [
+          { key: 'side', label: '측면', options: ['우측', '좌측', '양측'] }
+        ],
         rx: [
           '메클리진(Meclizine) 12.5mg PO 1T tid prn',
           '디멘히드리네이트(Dimenhydrinate) 50mg PO 1T tid prn',
@@ -976,7 +1094,12 @@ const DATA = {
           '수액 처치 (NS 1L IV)',
           '제토제 IV (Metoclopramide 10mg / Ondansetron 4mg)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 비조영증강 복부 CT상 [우/좌측] [요관/신장] 약 [○]mm 결석 확인되었습니다. 발열, 백혈구뇨, 신장 기능 저하 등 폐쇄성 신우신염 또는 합병증 시사하는 소견 보이지 않았으며, 통증 외 활력징후 안정적이었습니다. 정맥 진통제 및 수액 투여 후 통증 호전되었고, 결석 자연 배출 가능한 크기로 평가되어 경구 약제 처방과 함께 외래 추적 관찰 계획으로 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 비조영증강 복부 CT상 {side} {location} 약 {size} 결석 확인되었습니다. 발열, 백혈구뇨, 신장 기능 저하 등 폐쇄성 신우신염 또는 합병증 시사하는 소견 보이지 않았으며, 통증 외 활력징후 안정적이었습니다. 정맥 진통제 및 수액 투여 후 통증 호전되었고, 결석 자연 배출 가능한 크기로 평가되어 경구 약제 처방과 함께 외래 추적 관찰 계획으로 귀가 조치하였습니다.',
+        vars: [
+          { key: 'side', label: '측면', options: ['우측', '좌측', '양측'] },
+          { key: 'location', label: '위치', options: ['신장', '근위 요관(UPJ)', '중부 요관', '원위 요관(UVJ)', '방광'] },
+          { key: 'size', label: '크기', options: ['2mm', '3mm', '4mm', '5mm', '6mm', '7mm', '8mm', '10mm'] }
+        ],
         rx: [
           '록소프로펜(Loxoprofen) 60mg PO 1T tid pc × 5-7d',
           '나프록센(Naproxen) 500mg PO 1T bid pc',
@@ -1023,7 +1146,11 @@ const DATA = {
           '수액 처치 (NS 500-1000mL IV)',
           '응급실 경과 관찰 (최소 4시간)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 호흡곤란, 천명음, 안면/입술/혀 부종 등 아나필락시스를 시사하는 소견 보이지 않았습니다. 신체 진찰상 [부위] 두드러기 발진 및 소양감 확인되었으며, 정맥 항히스타민제 및 스테로이드 투여 후 발진 및 소양감 호전되었습니다. 응급실에서 [N]시간 경과 관찰 동안 증상 재발 없음과 활력징후 안정적임을 재확인 후 경구 약제 처방과 함께 귀가 조치하였습니다. 유발 원인 회피 및 재발 시 대처법 교육하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 호흡곤란, 천명음, 안면/입술/혀 부종 등 아나필락시스를 시사하는 소견 보이지 않았습니다. 신체 진찰상 {site} 두드러기 발진 및 소양감 확인되었으며, 정맥 항히스타민제 및 스테로이드 투여 후 발진 및 소양감 호전되었습니다. 응급실에서 {duration} 경과 관찰 동안 증상 재발 없음과 활력징후 안정적임을 재확인 후 경구 약제 처방과 함께 귀가 조치하였습니다. 유발 원인 회피 및 재발 시 대처법 교육하였습니다.',
+        vars: [
+          { key: 'site', label: '분포', options: ['전신', '체간 위주', '사지 위주', '안면 위주', '국소'] },
+          { key: 'duration', label: '관찰시간', options: ['2시간', '4시간', '6시간', '8시간'] }
+        ],
         rx: [
           '세티리진(Cetirizine) 10mg PO 1T qd × 1-2주',
           '레보세티리진(Levocetirizine) 5mg PO 1T qd',
@@ -1068,7 +1195,10 @@ const DATA = {
           '환부 거상 권유',
           '병변 경계 marking (악화 추적용)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 [부위] 발적, 열감, 부종, 압통 확인되었습니다. 괴사성 근막염을 시사하는 극심한 통증, 피부 괴사, 수포, crepitus, 전신성 패혈증 징후 보이지 않았으며, 영상 검사상 가스 형성이나 농양 의심 소견 없었습니다. 혈액 검사상 백혈구 증가 및 CRP 상승 소견 확인되었고, 응급실에서 항생제 1차 정맥 투여 및 진통제 시행 후 환부 경계 marking하고 경과 관찰하였습니다. 외래 추적 관찰 가능한 단순 봉와직염으로 판단되어 경구 항생제 처방과 함께 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 {site} 발적, 열감, 부종, 압통 확인되었습니다. 괴사성 근막염을 시사하는 극심한 통증, 피부 괴사, 수포, crepitus, 전신성 패혈증 징후 보이지 않았으며, 영상 검사상 가스 형성이나 농양 의심 소견 없었습니다. 혈액 검사상 백혈구 증가 및 CRP 상승 소견 확인되었고, 응급실에서 항생제 1차 정맥 투여 및 진통제 시행 후 환부 경계 marking하고 경과 관찰하였습니다. 외래 추적 관찰 가능한 단순 봉와직염으로 판단되어 경구 항생제 처방과 함께 귀가 조치하였습니다.',
+        vars: [
+          { key: 'site', label: '부위', options: ['안면', '경부', '체간', '상지', '전완', '손', '대퇴', '하퇴', '족부', '회음부'] }
+        ],
         rx: [
           '세팔렉신(Cephalexin) 500mg PO 1T qid × 7-10d',
           '아목시실린/클라불라네이트(Amoxicillin/Clavulanate) 625mg PO 1T tid pc × 7-10d',
@@ -1109,7 +1239,10 @@ const DATA = {
           '수액 처치 (NS 500mL IV)',
           '안과 의뢰 (안면/안와 침범 시)'
         ],
-        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 [부위, 피부분절 따른] 단측성 띠 모양의 수포성 발진 확인되어 대상포진으로 진단되었습니다. 안면/안와 침범 및 운동 신경 침범 의심 소견 없었으며, 발진 발생 72시간 이내로 항바이러스제 투여 적응증에 해당하였습니다. 정맥 진통제 투여 후 통증 호전되어 경구 항바이러스제 및 신경통 조절 약제 처방과 함께 귀가 조치하였습니다. 환자에게 항바이러스제 완복 및 수포 부위 청결 유지 권유하였습니다.',
+        narrative: '환자는 응급실 내원 후 활력징후 안정적이었으며, 진찰상 {site} 피부분절을 따른 단측성 띠 모양의 수포성 발진 확인되어 대상포진으로 진단되었습니다. 안면/안와 침범 및 운동 신경 침범 의심 소견 없었으며, 발진 발생 72시간 이내로 항바이러스제 투여 적응증에 해당하였습니다. 정맥 진통제 투여 후 통증 호전되어 경구 항바이러스제 및 신경통 조절 약제 처방과 함께 귀가 조치하였습니다. 환자에게 항바이러스제 완복 및 수포 부위 청결 유지 권유하였습니다.',
+        vars: [
+          { key: 'site', label: '분절', options: ['흉추(T1-T6)', '흉추(T6-T12)', '요추(L1-L5)', '경추(C2-C8)', '삼차신경(V1)', '삼차신경(V2)', '삼차신경(V3)', '천추(S1-S5)'] }
+        ],
         rx: [
           '아시클로비르(Acyclovir) 800mg PO 5T/day (1T q4h, 새벽 제외) × 7d',
           '발라시클로비르(Valacyclovir) 1000mg PO 1T tid × 7d',
@@ -1208,7 +1341,10 @@ const DATA = {
           '수액 처치 (NS 500mL IV)',
           '응급실 경과 관찰'
         ],
-        narrative: '환자는 응급실 내원 후 시행한 심전도, 심근효소, 흉부 X-ray, 혈액 검사상 심혈관 또는 호흡기, 대사성 원인을 시사하는 특이 소견 보이지 않았습니다. 활력징후 안정적이었으며, 증상의 양상(급격한 발작적 발생, 죽음의 공포, 과호흡, 사지 저림, 흉부 압박감) 및 검사 소견을 종합할 때 공황발작 또는 과호흡 증후군으로 판단되었습니다. 응급실에서 안정 및 호흡 조절 교육 시행하였고 [항불안제 투여 후] 증상 호전되어 정신건강의학과 외래 추적 관찰 권유와 함께 귀가 조치하였습니다.',
+        narrative: '환자는 응급실 내원 후 시행한 심전도, 심근효소, 흉부 X-ray, 혈액 검사상 심혈관 또는 호흡기, 대사성 원인을 시사하는 특이 소견 보이지 않았습니다. 활력징후 안정적이었으며, 증상의 양상(급격한 발작적 발생, 죽음의 공포, 과호흡, 사지 저림, 흉부 압박감) 및 검사 소견을 종합할 때 공황발작 또는 과호흡 증후군으로 판단되었습니다. 응급실에서 안정 및 호흡 조절 교육 시행하였고 {anxio} 증상 호전되어 정신건강의학과 외래 추적 관찰 권유와 함께 귀가 조치하였습니다.',
+        vars: [
+          { key: 'anxio', label: '약물', options: ['항불안제 투여 후', '추가 약물 투여 없이', '경구 항불안제 복용 후'] }
+        ],
         rx: [
           '알프라졸람(Alprazolam) 0.25mg PO 1T tid prn (단기간만)',
           '로라제팜(Lorazepam) 0.5mg PO 1T bid prn (단기간만)',
@@ -1287,13 +1423,16 @@ let state = {
   tests: new Set(),
   decisions: new Set(),
   narrative: '',
+  vars: {},
   rx: new Set(),
   fu: '',
   warn: new Set(),
   customTests: [],
   customDecisions: [],
   customRx: [],
-  customWarn: []
+  customWarn: [],
+  extraNarrative: [],   // 진료 경과에 추가하는 줄들
+  extraFu: []           // 추후 진료 계획에 추가하는 줄들
 };
 
 // ============================================================
@@ -1302,7 +1441,7 @@ let state = {
 function renderCats() {
   const el = document.getElementById('cats');
   el.innerHTML = Object.entries(DATA).map(([key, cat]) =>
-    `<button class="cat ${state.category === key ? 'active' : ''}" onclick="selectCat('${key}')">${cat.name}</button>`
+    `<button class="cat c-${key} ${state.category === key ? 'active' : ''}" onclick="selectCat('${key}')">${cat.name}</button>`
   ).join('');
 }
 
@@ -1335,7 +1474,7 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label">시행한 검사 <span class="hint">탭하여 선택 (기본 선택됨)</span></div>
+      <div class="field-label"><span><span class="ico">🔬</span>시행한 검사</span><span class="hint">시행한 검사만 선택</span></div>
       <div class="chips">
         ${d.tests.map(t => `<span class="chip ${state.tests.has(t) ? 'on' : ''}" onclick="toggleSet('tests', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customTests.map((t, i) => `<span class="chip on" onclick="removeCustom('customTests', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1347,7 +1486,7 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label">⚡ 응급실 처치 (결정 사항) <span class="hint">시행한 것만 선택</span></div>
+      <div class="field-label"><span><span class="ico">⚡</span>응급실 처치</span><span class="hint">시행한 것만 선택</span></div>
       <div class="chips">
         ${d.decisions.map(t => `<span class="chip tx ${state.decisions.has(t) ? 'on' : ''}" onclick="toggleSet('decisions', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customDecisions.map((t, i) => `<span class="chip tx on" onclick="removeCustom('customDecisions', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1359,14 +1498,32 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label">📝 진료 경과 / 퇴원 시 상태
-        <span class="field-actions"><button class="reset-btn" onclick="resetNarrative()">🔄 템플릿 다시 불러오기</button></span>
+      <div class="field-label"><span><span class="ico">📝</span>진료 경과 / 퇴원 시 상태</span>
+        <button class="reset-btn" onclick="resetNarrative()">🔄 템플릿 다시</button>
       </div>
+      ${d.vars && d.vars.length ? `
+        <div class="vars-box">
+          <div class="vars-title">⚡ 빠른 채우기 — 칩을 탭하면 본문에 자동 입력</div>
+          ${d.vars.map(v => `
+            <div class="var-row">
+              <div class="var-label">${v.label}</div>
+              <div class="var-chips">
+                ${v.options.map(o => `<span class="var-chip ${state.vars[v.key] === o ? 'on' : ''}" onclick="selectVar('${escAttr(v.key)}', this.dataset.v)" data-v="${escAttr(o)}">${o}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
       <textarea class="narrative" placeholder="진료 경과 요약" oninput="state.narrative=this.value">${state.narrative || d.narrative}</textarea>
+      ${state.extraNarrative.length ? `<div class="chips" style="margin-top:8px;">${state.extraNarrative.map((t, i) => `<span class="chip on" onclick="removeCustom('extraNarrative', ${i})"><span class="x">✕</span>${t}</span>`).join('')}</div>` : ''}
+      <div class="add-row">
+        <input type="text" placeholder="추가 내용 입력 후 Enter (예: 보호자 입회 하 설명)" onkeydown="if(event.key==='Enter') addCustomBtn('extraNarrative', this)">
+        <button onclick="addCustomBtn('extraNarrative', this.previousElementSibling)">추가</button>
+      </div>
     </div>
 
     <div class="field">
-      <div class="field-label">💊 퇴원 처방 (성분명) <span class="hint">필요한 것만 선택</span></div>
+      <div class="field-label"><span><span class="ico">💊</span>퇴원 처방 (성분명)</span><span class="hint">필요한 것만 선택</span></div>
       <div class="chips">
         ${d.rx.map(t => `<span class="chip rx ${state.rx.has(t) ? 'on' : ''}" onclick="toggleSet('rx', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customRx.map((t, i) => `<span class="chip rx on" onclick="removeCustom('customRx', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1378,15 +1535,20 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label">📅 추후 진료 계획
-        <span class="field-actions"><button class="reset-btn" onclick="resetFu()">🔄 기본값</button></span>
+      <div class="field-label"><span><span class="ico">📅</span>추후 진료 계획</span>
+        <button class="reset-btn" onclick="resetFu()">🔄 기본값</button>
       </div>
       <textarea oninput="state.fu=this.value">${state.fu || d.fu}</textarea>
+      ${state.extraFu.length ? `<div class="chips" style="margin-top:8px;">${state.extraFu.map((t, i) => `<span class="chip on" onclick="removeCustom('extraFu', ${i})"><span class="x">✕</span>${t}</span>`).join('')}</div>` : ''}
+      <div class="add-row">
+        <input type="text" placeholder="추가 계획 입력 후 Enter (예: 1주 뒤 외래)" onkeydown="if(event.key==='Enter') addCustomBtn('extraFu', this)">
+        <button onclick="addCustomBtn('extraFu', this.previousElementSibling)">추가</button>
+      </div>
     </div>
 
     <div class="field">
-      <div class="field-label">⚠️ 재내원 주의사항 <span class="hint">기본 선택됨, 환자 맞춤 수정</span></div>
-      <div class="warn-note">의료법적 방어를 위해 가능한 모든 항목을 포함하는 것이 권장됩니다. 환자 상황에 맞춰 조정하세요.</div>
+      <div class="field-label"><span><span class="ico">⚠️</span>재내원 주의사항 안내 항목</span><span class="hint">교육한 항목만 선택</span></div>
+      <div class="warn-note">아래 항목은 <b>환자/보호자에게 설명한 내용</b>으로 의무기록에 출력됩니다. 의료법적 방어를 위해 가능한 모든 적색기를 포함하는 것을 권장합니다.</div>
       <div class="chips">
         ${d.warn.map(t => `<span class="chip warn ${state.warn.has(t) ? 'on' : ''}" onclick="toggleSet('warn', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customWarn.map((t, i) => `<span class="chip warn on" onclick="removeCustom('customWarn', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1398,7 +1560,7 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label">📋 미리보기 <span class="hint">복사 시 이 형식으로</span></div>
+      <div class="field-label"><span><span class="ico">📋</span>미리보기</span><span class="hint">복사 시 이 형식으로</span></div>
       <div class="preview" id="preview">${escHtml(buildText())}</div>
     </div>
   `;
@@ -1423,12 +1585,15 @@ function selectDisease(id) {
   state.decisions = new Set();   // 응급실 처치는 의사가 시행한 것만 직접 선택
   state.rx = new Set();          // 처방도 직접 선택
   state.warn = new Set(d.warn);  // 주의사항은 기본 모두 선택 (방어적)
-  state.narrative = d.narrative;
+  state.vars = {};               // 변수는 모두 미선택으로 시작
+  state.narrative = fillNarrative(d.narrative, state.vars, d);
   state.fu = d.fu;
   state.customTests = [];
   state.customDecisions = [];
   state.customRx = [];
   state.customWarn = [];
+  state.extraNarrative = [];
+  state.extraFu = [];
   renderDiseases();
   renderForm();
 }
@@ -1454,7 +1619,7 @@ function removeCustom(listName, idx) {
 
 function resetNarrative() {
   const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  state.narrative = d.narrative;
+  state.narrative = fillNarrative(d.narrative, state.vars, d);
   renderForm();
 }
 
@@ -1470,11 +1635,14 @@ function clearForm() {
   state.rx = new Set();
   state.warn = new Set();
   state.narrative = '';
+  state.vars = {};
   state.fu = '';
   state.customTests = [];
   state.customDecisions = [];
   state.customRx = [];
   state.customWarn = [];
+  state.extraNarrative = [];
+  state.extraFu = [];
 }
 
 function resetAll() {
@@ -1513,7 +1681,16 @@ function buildText() {
     lines.push('');
   }
 
-  const narr = (state.narrative || d.narrative).trim();
+  // narrative: 변수 미선택 시 [라벨] 형식 그대로 출력 (의사가 미리 보고 채울 수 있게)
+  let narr = (state.narrative || d.narrative).trim();
+  // 혹시 사용자가 수동 편집했지만 vars가 있는 경우 vars 반영
+  if (d.vars && narr.indexOf('{') !== -1) {
+    narr = fillNarrative(narr, state.vars, d);
+  }
+  // 추가 라인 합치기
+  if (state.extraNarrative && state.extraNarrative.length) {
+    narr = narr + '\n' + state.extraNarrative.map(t => t).join('\n');
+  }
   if (narr) {
     lines.push('[진료 경과 및 퇴원 시 상태]');
     lines.push(narr);
@@ -1527,7 +1704,10 @@ function buildText() {
     lines.push('');
   }
 
-  const fuText = (state.fu || d.fu).trim();
+  let fuText = (state.fu || d.fu).trim();
+  if (state.extraFu && state.extraFu.length) {
+    fuText = fuText + '\n' + state.extraFu.map(t => '- ' + t).join('\n');
+  }
   if (fuText) {
     lines.push('[추후 진료 계획]');
     lines.push(fuText);
@@ -1536,11 +1716,11 @@ function buildText() {
 
   const allWarn = [...state.warn, ...state.customWarn];
   if (allWarn.length) {
-    lines.push('[재내원 주의사항]');
-    lines.push('아래와 같은 증상이 발생할 경우 즉시 응급실로 재내원하시거나 119에 연락하시기 바랍니다.');
+    lines.push('[재내원 주의사항 안내 (환자/보호자 교육)]');
+    lines.push('환자 및 보호자에게 아래와 같은 증상 발생 시 즉시 응급실로 재내원하거나 119에 연락하도록 충분히 설명하였으며, 환자 및 보호자가 해당 내용을 이해하였음을 확인함.');
     allWarn.forEach(w => lines.push(`- ${w}`));
     lines.push('');
-    lines.push('※ 본 안내사항은 진료 시점의 평가에 따른 것이며, 증상의 변화나 새로운 증상 발생 시 언제든지 의료기관 방문이 필요합니다.');
+    lines.push('※ 본 안내사항은 진료 시점의 평가에 따른 것이며, 위에 명시되지 않은 증상이라도 변화가 있거나 새로운 증상이 발생할 경우 언제든지 의료기관 방문이 필요함을 함께 설명하였음. 환자/보호자의 추가 질문 없음을 확인하고 귀가 조치함.');
   }
 
   return lines.join('\n');
@@ -1587,6 +1767,22 @@ function showToast(msg, isError) {
 // ============================================================
 // 유틸
 // ============================================================
+function fillNarrative(template, vars, disease) {
+  if (!template) return '';
+  return template.replace(/\{(\w+)\}/g, (match, key) => {
+    if (vars && vars[key]) return vars[key];
+    const v = disease && disease.vars ? disease.vars.find(x => x.key === key) : null;
+    return v ? '[' + v.label + ']' : match;
+  });
+}
+
+function selectVar(key, value) {
+  state.vars[key] = value;
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  state.narrative = fillNarrative(d.narrative, state.vars, d);
+  renderForm();
+}
+
 function escAttr(s) {
   return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
