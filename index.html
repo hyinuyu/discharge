@@ -1359,7 +1359,7 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label"><span><span class="ico">🔬</span>시행한 검사</span><span class="hint">시행한 검사만 선택</span></div>
+      <div class="field-label"><span><span class="ico">🔬</span>시행한 검사</span><span class="hint">기본 미선택, 시행한 검사만 선택</span></div>
       <div class="chips">
         ${d.tests.map(t => `<span class="chip ${state.tests.has(t) ? 'on' : ''}" onclick="toggleSet('tests', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customTests.map((t, i) => `<span class="chip on" onclick="removeCustom('customTests', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1501,7 +1501,7 @@ function selectCat(key) {
 function selectDisease(id) {
   state.disease = id;
   const d = DATA[state.category].diseases.find(x => x.id === id);
-  state.tests = new Set(d.tests);
+  state.tests = new Set();       // 검사도 기본 OFF — 실제 시행한 것만 선택
   state.decisions = new Set();   // 응급실 처치는 의사가 시행한 것만 직접 선택
   state.rx = new Set();          // 처방도 직접 선택
   state.warn = new Set();        // 주의사항도 기본 OFF — 환자별로 필요한 것만 선택
@@ -1840,7 +1840,7 @@ function formatTestList() {
     const idx = t.indexOf(':');
     return idx > 0 ? t.substring(0, idx).trim() : t;
   });
-  if (shortened.length === 0) return '필요한 검사';
+  if (shortened.length === 0) return '신체검진 및 응급실 평가';
   if (shortened.length === 1) return shortened[0];
   if (shortened.length === 2) return shortened.join(' 및 ');
   return shortened.slice(0, -1).join(', ') + ' 및 ' + shortened[shortened.length - 1];
