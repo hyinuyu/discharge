@@ -140,6 +140,7 @@
   .chip.tx.on { background: var(--yellow-soft); color: var(--yellow); border-color: var(--yellow); }
   .chip.rx.on { background: var(--green-soft); color: var(--green); border-color: var(--green); }
   .chip.warn.on { background: var(--red-soft); color: var(--red); border-color: var(--red); }
+  .chip.ds.on { background: var(--purple-soft); color: var(--purple); border-color: var(--purple); }
   .chip .x { color: var(--text3); margin-right: 4px; font-size: 10px; }
 
   /* 하단 액션 바 */
@@ -173,10 +174,18 @@
   .add-row button:hover { background: var(--accent); color: #fff; }
   .add-row button:active { transform: scale(0.96); }
 
-  /* 미리보기 */
-  .preview { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.7; max-height: 320px; overflow-y: auto; }
-  .preview::-webkit-scrollbar { width: 6px; }
-  .preview::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  /* 미리보기 - 3섹션 카드 */
+  .preview-stack { display: flex; flex-direction: column; gap: 8px; }
+  .preview-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .preview-card:hover { border-color: var(--border2); }
+  .preview-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; background: var(--bg3); border-bottom: 0.5px solid var(--border); }
+  .preview-title { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+  .copy-section { background: var(--accent-soft); color: var(--accent); border: 0.5px solid var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all 0.15s; }
+  .copy-section:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
+  .copy-section:active { transform: scale(0.96); }
+  .preview-body { padding: 12px 14px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.65; max-height: 260px; overflow-y: auto; }
+  .preview-body::-webkit-scrollbar { width: 6px; }
+  .preview-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
   /* 경고 메모 */
   .warn-note { background: var(--red-soft); border-left: 3px solid var(--red); color: var(--text2); font-size: 11px; padding: 9px 11px; border-radius: 8px; margin-bottom: 8px; line-height: 1.55; }
@@ -253,15 +262,11 @@ const DATA = {
         ],
         fu: '증상 호전 시 추가 진료 불필요. 7일 이상 증상 지속, 발열 악화, 또는 새로운 증상 발생 시 가까운 내과 외래 방문 권유.',
         warn: [
-          '38.5℃ 이상의 고열이 3일 이상 지속되거나 39℃ 초과하는 경우',
-          '호흡곤란, 숨이 차거나 가슴이 답답한 증상',
-          '가슴 통증, 특히 깊은 숨을 쉴 때 악화되는 통증',
-          '객혈(피가 섞인 가래) 또는 다량의 농성 가래',
-          '의식 변화, 심한 두통과 함께 목이 뻣뻣함 (뇌수막염 의심)',
-          '입술이나 손/발끝의 청색증',
-          '증상이 7일 이상 지속되거나 일시 호전 후 다시 악화되는 경우 (이차 세균 감염 의심)',
-          '소변량의 현저한 감소, 입마름, 어지러움 (탈수)',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '호흡곤란 발생 또는 안정 시에도 숨이 참',
+          '38.5℃ 이상의 고열이 3일 이상 지속',
+          '객혈 또는 다량의 농성 가래',
+          '심한 두통, 발열, 목이 뻣뻣함 (뇌수막염 의심)',
+          '입술/손발 청색증'
         ]
       },
       {
@@ -292,14 +297,11 @@ const DATA = {
         ],
         fu: '항생제 복용 후 3-5일 내 증상 미호전 또는 악화 시 이비인후과 외래 방문. 증상 호전 시 추가 진료 불필요(단, 항생제는 7일간 완복 권유).',
         warn: [
-          '39℃ 이상 고열이 항생제 복용 후 48시간 이상 지속되는 경우',
-          '침을 삼킬 수 없을 정도의 심한 통증, 또는 침을 흘리게 되는 경우',
-          '입을 잘 벌리지 못함 (trismus, 편도주위농양 의심)',
-          '호흡곤란, 천명음, 또는 목소리가 잠기는 변화',
-          '경부 한쪽이 부풀어 오르거나 만졌을 때 심한 통증',
-          '음식이나 물 섭취가 전혀 불가능한 경우',
-          '의식 변화 또는 극심한 무기력',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '침을 삼킬 수 없거나 침을 흘릴 정도의 통증',
+          '입을 잘 벌리지 못함 (편도주위농양 의심)',
+          '호흡곤란, 천명음, 또는 목소리 변화',
+          '경부 한쪽 부종 또는 만지면 심한 통증',
+          '항생제 48시간 이후에도 39℃ 이상 고열 지속'
         ]
       },
       {
@@ -330,14 +332,11 @@ const DATA = {
         ],
         fu: '증상 지속/악화 시 호흡기내과 외래 방문. 1주일 이상 기침 지속 시 흉부 영상 재평가 권유.',
         warn: [
-          '호흡곤란이 악화되거나 안정 시에도 숨이 찬 경우',
-          '입술이나 손/발끝의 청색증',
-          '38.5℃ 이상 고열이 새로 발생하거나 지속되는 경우',
-          '가슴 통증, 특히 흉부 압박감이나 짓누르는 통증',
-          '객혈(피가 섞인 가래) 또는 다량의 농성 가래',
-          '의식 변화 또는 극심한 무기력',
-          '심한 천명음이나 호흡 시 쌕쌕거림이 악화',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '호흡곤란 악화 또는 안정 시 숨참',
+          '입술/손발 청색증',
+          '38.5℃ 이상 고열 새로 발생 또는 지속',
+          '가슴 통증',
+          '객혈'
         ]
       },
       {
@@ -366,14 +365,11 @@ const DATA = {
         ],
         fu: '항바이러스제 5일간 완복 권유. 증상 호전 시 추가 진료 불필요. 발열 5일 이상 지속, 호흡곤란, 또는 새로운 증상 발생 시 즉시 내원.',
         warn: [
-          '호흡곤란이 새로 발생하거나 악화되는 경우',
-          '38.5℃ 이상 고열이 5일 이상 지속되거나 일시 호전 후 다시 악화 (이차 세균 감염/폐렴 의심)',
-          '가슴 통증 또는 흉부 압박감',
-          '의식 변화, 심한 두통, 또는 극심한 무기력',
-          '음식이나 물 섭취가 전혀 불가능한 경우',
-          '입술이나 손/발끝의 청색증',
-          '소아의 경우: 호흡이 빠르거나 가슴이 함몰될 정도로 힘들어 보일 때, 충분한 수분 섭취 못할 때, 깨워도 잘 반응 없을 때',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '호흡곤란 새로 발생 또는 악화',
+          '가슴 통증',
+          '38.5℃ 이상 고열이 5일 이상 지속 또는 일시 호전 후 다시 악화',
+          '의식 변화, 졸음, 극심한 무기력',
+          '입술/손발 청색증'
         ]
       },
       {
@@ -405,16 +401,12 @@ const DATA = {
         ],
         fu: '2-3일 내 호흡기내과 외래 방문하여 임상 경과 평가 필요. 항생제는 처방대로 완복 권유. 증상 악화 시 즉시 응급실 재내원.',
         warn: [
-          '호흡곤란이 악화되거나 안정 시에도 숨이 찬 경우',
-          '입술/얼굴/손발의 청색증',
-          'SpO2 측정기가 있다면 94% 미만',
-          '38.5℃ 이상 고열이 항생제 복용 후 48-72시간 이상 지속',
-          '가슴 통증이 새로 발생하거나 악화되는 경우',
-          '객혈(피가 섞인 가래) 발생',
-          '의식 변화, 졸음, 혼동 (특히 노인의 경우)',
-          '식사나 수분 섭취가 불가능하거나 소변량 현저히 감소',
-          '실신 또는 어지러움이 심함',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '호흡곤란 악화 또는 안정 시에도 숨이 참',
+          'SpO2 94% 미만 (측정기 있는 경우)',
+          '입술/얼굴 청색증',
+          '항생제 48-72시간 이후에도 38.5℃ 이상 고열 지속',
+          '의식 변화 (특히 노인)',
+          '객혈 또는 새로 발생한 가슴 통증'
         ]
       }
     ]
@@ -457,15 +449,10 @@ const DATA = {
         warn: [
           '24시간 이상 지속되는 구토로 물조차 마실 수 없는 경우',
           '혈변, 검은색 변(흑색변), 또는 다량의 출혈',
-          '38.5℃ 이상의 고열이 48시간 이상 지속되거나 39℃를 초과',
-          '진통제로 조절되지 않는 심한 복통',
-          '복통이 우하복부 한 곳에 국한되거나 점진적으로 악화 (충수염 의심)',
-          '복부가 단단해지거나 만지면 매우 아프고 움직일 수 없을 정도',
-          '탈수 증상: 소변량의 현저한 감소(8시간 이상 무뇨), 입마름, 어지러움, 기립 시 어지러움, 식은땀',
-          '의식 변화, 졸음, 또는 반응이 둔해짐 (특히 소아 및 노인)',
-          '소아의 경우: 8시간 이상 소변을 보지 않거나, 깨워도 잘 반응 없을 때, 입술이 마르고 눈물 없이 울 때',
-          '증상이 5일 이상 지속되거나 점진적으로 악화',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '진통제로 조절되지 않는 심한 복통 또는 우하복부 통증 (충수염 의심)',
+          '복부가 단단해지고 만지면 매우 아픔',
+          '탈수 증상 (소변량 현저한 감소, 어지러움, 기립 시 어지러움)',
+          '의식 변화 또는 졸음 (특히 소아 및 노인)'
         ]
       },
       {
@@ -500,14 +487,9 @@ const DATA = {
         warn: [
           '검은색 변(흑색변), 혈변, 또는 토혈(피를 토함)',
           '진통제로 조절되지 않는 심한 복통',
-          '음식이나 물을 삼킬 수 없을 정도의 연하 곤란',
-          '의도하지 않은 체중 감소',
-          '가슴 통증 또는 흉부 압박감 (심혈관 원인 감별 필요)',
-          '식은땀, 호흡곤란을 동반한 명치 통증',
-          '38.5℃ 이상의 고열 동반',
-          '심한 어지러움, 실신, 또는 창백한 안색',
-          '복부가 점점 더 단단해지거나 부풀어 오르는 경우',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '가슴 통증, 식은땀, 호흡곤란 동반 (심혈관 원인 감별)',
+          '음식 삼킴이 어려워지는 연하 곤란',
+          '38.5℃ 이상 고열 또는 의도하지 않은 체중 감소'
         ]
       },
       {
@@ -536,15 +518,11 @@ const DATA = {
         ],
         fu: '식이 조절(하루 1.5-2L 수분, 섬유질 섭취), 규칙적 배변 습관 권유. 증상 지속/악화 시 내과 외래 방문.',
         warn: [
-          '심한 복통이 진통제로 조절되지 않거나 점점 악화',
-          '복부가 점점 더 부풀어 오르고 단단해짐',
+          '심한 복통이 진통제로 조절되지 않음',
           '구토가 반복되거나 변/가스가 전혀 나오지 않는 경우 (장폐색 의심)',
           '혈변 또는 검은색 변',
-          '의도하지 않은 체중 감소',
-          '38℃ 이상의 발열 동반',
-          '직장 출혈이 다량이거나 지속됨',
-          '실신 또는 심한 어지러움',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '복부가 점점 더 부풀어 오르고 단단해짐',
+          '38℃ 이상 발열 동반'
         ]
       },
       {
@@ -573,15 +551,11 @@ const DATA = {
         ],
         fu: '4주간 약제 복용 후 내과 외래 방문하여 임상 경과 평가. 증상 지속 시 위내시경 권유. 생활 습관 교정(과식/음주/카페인/취침 직전 식사 회피, 머리 높이고 취침) 권유.',
         warn: [
-          '흉통이 심하게 악화되거나 좌측 팔/턱/등으로 방사되는 통증',
-          '식은땀, 호흡곤란, 또는 실신을 동반한 흉부 압박감',
-          '연하 곤란이 새로 발생하거나 음식이 걸리는 느낌',
-          '의도하지 않은 체중 감소',
-          '토혈(피를 토함) 또는 검은색 변',
-          '극심한 상복부 통증이 등으로 방사 (췌장염 감별)',
-          '38.5℃ 이상 고열 동반',
-          '구토가 반복되어 수분 섭취 불가능',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '흉통이 좌측 팔/턱/등으로 방사되거나 식은땀 동반',
+          '호흡곤란, 실신, 또는 의식 변화 동반 흉통',
+          '토혈 또는 검은색 변',
+          '음식이 걸리는 느낌, 새로 발생한 연하 곤란',
+          '의도하지 않은 체중 감소'
         ]
       }
     ]
@@ -625,16 +599,11 @@ const DATA = {
         ],
         fu: '2일 후 외과 외래 또는 가까운 의원에서 드레싱 교환. 발사 일정: 안면 4-5일, 두피/체간 7-10일, 사지 10-14일, 관절 부위 14일. 봉합 부위 1일 1회 소독 및 드레싱 교환 권유, 24시간 후부터 가볍게 세척 가능.',
         warn: [
-          '봉합 부위의 발적이 점점 확산되거나 열감/부종이 심해짐',
-          '농성 분비물(노란/녹색 고름)이 나오는 경우',
-          '38℃ 이상 발열이 동반되는 경우',
-          '통증이 점점 심해지거나 진통제로 조절되지 않음',
-          '봉합 부위에서 다량의 출혈이 멈추지 않음',
-          '손상 부위 원위부의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
-          '손가락/발가락의 운동이 잘 안되거나 통증이 심함',
-          '봉합 실이 풀리거나 상처가 벌어진 경우',
-          '림프절(겨드랑이/사타구니/목)이 부어오르는 경우',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '봉합 부위 발적이 점점 확산되거나 농성 분비물',
+          '38℃ 이상 발열',
+          '손상 부위 원위부 감각 저하, 마비, 또는 색깔 변화 (창백/청색)',
+          '봉합 부위에서 다량의 출혈',
+          '손가락/발가락 움직임 불가 또는 운동 시 극심한 통증'
         ]
       },
       {
@@ -667,14 +636,10 @@ const DATA = {
         fu: '증상 호전 시 추가 진료 불필요. 3-5일 이상 통증/부종 지속, 운동 제한 지속 시 정형외과 외래 방문. 첫 48시간은 냉찜질, 이후 온찜질 가능.',
         warn: [
           '통증이 진통제로 조절되지 않거나 점점 악화',
-          '부종이 급격히 증가하거나 손상 부위가 단단하고 팽팽해짐',
-          '손상 부위 원위부(손/발끝)의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
-          '손가락/발가락을 움직일 수 없거나 움직일 때 극심한 통증 (구획증후군 의심)',
-          '체중을 실을 수 없거나 사용할 수 없을 정도의 기능 장애',
-          '발적, 열감이 점점 확산되거나 농성 분비물',
-          '38℃ 이상 발열 동반',
-          '소변 색깔이 콜라색/검붉은색으로 변함 (횡문근융해증 의심)',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '부종이 급격히 증가하거나 손상 부위가 단단하고 팽팽해짐 (구획증후군)',
+          '손상 부위 원위부 감각 저하, 마비, 색깔 변화',
+          '소변 색깔이 콜라색/검붉은색 (횡문근융해증 의심)',
+          '38℃ 이상 발열'
         ]
       },
       {
@@ -709,14 +674,10 @@ const DATA = {
         fu: '3-5일 후 정형외과 외래 방문하여 인대 손상 정도 평가 및 재활 치료 계획. 처음 48-72시간은 RICE(휴식/냉찜질/압박/거상) 원칙 준수. 부목 임의 제거 금지.',
         warn: [
           '통증이 진통제로 조절되지 않거나 시간이 지나도 악화',
-          '부종이 급격히 증가하거나 손상 부위가 단단하고 팽팽해짐',
-          '손/발끝의 감각 저하, 저림, 마비, 또는 색깔 변화 (창백/청색)',
-          '손가락/발가락을 움직일 수 없거나 부목 안에서 극심한 통증',
-          '발열, 발적, 열감이 손상 부위에서 확산되는 경우',
-          '체중을 전혀 실을 수 없거나 관절이 빠진 느낌',
-          '관절에서 비정상적인 소리나 변형이 관찰됨',
-          '부목/붕대가 너무 조이거나 불편하여 일상생활 불가',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '부종 급증 또는 손상 부위 단단해짐',
+          '손/발끝 감각 저하, 마비, 색깔 변화',
+          '부목/붕대 안에서 극심한 통증 또는 움직임 불가',
+          '38℃ 이상 발열, 발적/열감 확산'
         ]
       },
       {
@@ -747,18 +708,12 @@ const DATA = {
         ],
         fu: '증상 호전 시 추가 진료 불필요. 두통/어지러움/기억력 저하 지속 시 신경외과/신경과 외래 방문. 향후 48시간 보호자가 환자의 의식 상태를 주의 깊게 관찰 필요(2-3시간 간격 깨워서 확인).',
         warn: [
-          '의식이 점점 흐려지거나 졸음이 심해짐, 깨워도 잘 반응 없음',
-          '구토가 2회 이상 반복되거나 분출성 구토 발생',
+          '의식이 흐려지거나 졸음 심해짐, 깨워도 잘 반응 없음',
+          '구토 2회 이상 반복 또는 분출성 구토',
           '경련 발생',
-          '두통이 점점 심해지거나 진통제로 조절되지 않음',
-          '편측 마비, 손/발에 힘이 빠짐, 또는 감각 이상',
-          '말이 어눌해지거나 이상한 행동을 보임',
-          '시야가 흐려지거나 둘로 보임, 한쪽 눈 동공이 더 커짐',
-          '귀나 코에서 맑은 액체 또는 피가 나옴',
-          '균형감각 상실, 휘청거림, 똑바로 걷지 못함',
-          '음주 후 외상의 경우 의식 변화 더욱 주의 깊게 관찰',
-          '특히 항응고제/항혈소판제 복용 중인 경우 정상 소견이어도 증상 발생 시 즉시 내원',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 향후 24-48시간이 가장 중요한 관찰 시간입니다.'
+          '편측 마비, 손/발 힘 빠짐, 감각 이상, 발음 어눌',
+          '동공 비대칭 또는 시야 이상',
+          '귀나 코에서 맑은 액체 또는 피가 나옴'
         ]
       },
       {
@@ -795,16 +750,11 @@ const DATA = {
         ],
         fu: '1-2일 후 화상클리닉/외과 외래 방문하여 드레싱 교환 및 화상 깊이 재평가. 수포는 임의로 터트리지 않도록 권유. 화상 부위 자외선 노출 피하고 보습 권유(흉터 예방).',
         warn: [
-          '화상 부위에 발적이 점점 확산되거나 농성 분비물(고름)이 나옴',
-          '38℃ 이상 발열 또는 오한',
-          '통증이 점점 심해지거나 진통제로 조절되지 않음',
-          '수포가 매우 커지거나 다량으로 새로 발생',
-          '화상 부위가 검게 변하거나 감각이 없어짐 (3도 화상 진행)',
-          '관절 부위 화상으로 운동 제한이 심해짐',
-          '얼굴/입/목 부위 화상에서 호흡곤란, 목소리 변화, 그을음 가래',
-          '소변량 현저한 감소, 어지러움, 식은땀 (전신 반응)',
-          '의식 변화 또는 극심한 무기력',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '화상 부위 발적 확산 또는 농성 분비물',
+          '38℃ 이상 발열',
+          '화상 부위가 검게 변하거나 감각이 없어짐 (3도 진행)',
+          '안면/입/목 화상에서 호흡곤란, 목소리 변화, 그을음 가래',
+          '의식 변화, 어지러움, 소변량 현저한 감소'
         ]
       }
     ]
@@ -841,20 +791,12 @@ const DATA = {
         ],
         fu: '증상 호전 시 추가 진료 불필요. 두통이 1주 이상 지속되거나 빈도가 증가, 또는 새로운 양상의 두통 발생 시 신경과 외래 방문. 진통제 남용(주 2-3회 이상) 시 약물과용두통 위험 있음 안내.',
         warn: [
-          '갑작스럽고 평소와 완전히 다른 양상의 극심한 두통 (천둥두통 - 지주막하출혈 의심)',
-          '두통과 함께 발열, 목이 뻣뻣함, 빛에 예민함 (뇌수막염 의심)',
-          '의식이 흐려지거나 졸음, 혼동, 이상한 행동',
-          '편측 마비, 손/발에 힘이 빠짐, 또는 감각 이상',
-          '말이 어눌해지거나 시야 이상, 한쪽 눈 동공이 더 커짐',
+          '갑작스럽고 평소와 다른 양상의 극심한 두통 (천둥두통, 지주막하출혈 의심)',
+          '발열 + 목이 뻣뻣함, 빛에 예민함 (뇌수막염 의심)',
+          '편측 마비, 감각 이상, 발음 어눌, 시야 이상',
+          '의식 변화, 졸음, 혼동',
           '경련 발생',
-          '두통과 함께 반복적인 구토, 특히 분출성 구토',
-          '두부 외상 후 발생한 두통이거나 외상 후 악화되는 두통',
-          '50세 이상에서 처음 발생한 두통이거나 평소와 다른 양상',
-          '점진적으로 매일 악화되는 두통',
-          '자세 변화 시 악화되는 두통 (눕거나 기침 시 악화)',
-          '임신 중이거나 출산 직후에 발생한 심한 두통',
-          '암, HIV, 면역저하 환자에서 발생한 두통',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '두부 외상 후 발생한 두통'
         ]
       },
       {
@@ -891,16 +833,10 @@ const DATA = {
         warn: [
           '평소 편두통과 양상이 완전히 다른 새로운 두통',
           '갑작스럽게 발생한 극심한 두통 (천둥두통)',
-          '두통과 함께 의식 변화, 졸음, 혼동',
-          '편측 마비, 감각 이상, 말 어눌함, 또는 시야 결손이 1시간 이상 지속',
-          '발열, 목이 뻣뻣함, 빛에 예민함 동반 (뇌수막염 의심)',
+          '편측 마비, 감각 이상, 말 어눌함, 시야 결손이 1시간 이상 지속',
+          '발열, 목이 뻣뻣함, 의식 변화 동반 (뇌수막염)',
           '경련 발생',
-          '두부 외상 후 발생한 두통',
-          '50세 이후 처음 발생한 편두통',
-          '임신 중이거나 출산 직후 발생한 심한 두통',
-          'Triptan 복용 후 가슴 통증, 호흡곤란, 또는 심한 어지러움',
-          '구토가 지속되어 수분 섭취 불가',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          'Triptan 복용 후 가슴 통증/호흡곤란'
         ]
       },
       {
@@ -935,18 +871,12 @@ const DATA = {
         ],
         fu: '증상 지속/반복 시 이비인후과 외래 방문하여 Epley maneuver 반복 시행 또는 추가 평가. 어지러움이 1주 이상 지속, 청력 변화, 또는 새로운 신경학적 증상 발생 시 신경과 외래 방문.',
         warn: [
-          '심한 두통과 함께 발생한 어지러움',
-          '편측 마비, 감각 이상, 말 어눌함, 발음 장애 (뇌졸중 의심)',
-          '시야 이상(둘로 보임, 시야 결손), 안검 하수, 동공 이상',
-          '얼굴이 한쪽으로 처지거나 비대칭',
+          '편측 마비, 감각 이상, 발음 장애, 시야 이상 (뇌졸중 의심)',
+          '얼굴 한쪽이 처지거나 비대칭',
           '의식 변화, 졸음, 혼동',
-          '경련 발생',
-          '균형 잡지 못하고 걸을 수 없거나, 한쪽으로 자꾸 쓰러짐',
-          '청력 저하, 이명, 또는 한쪽 귀가 먹먹한 느낌이 새로 발생',
-          '체위 변화와 관계없이 지속되는 어지러움',
-          '심한 구토로 수분 섭취가 불가능한 경우',
-          '가슴 두근거림, 흉통, 또는 실신 동반',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '청력 저하, 이명, 또는 한쪽 귀 먹먹함이 새로 발생',
+          '균형 잡지 못하고 걸을 수 없거나 한쪽으로 자꾸 쓰러짐',
+          '심한 두통 또는 흉통/심계항진 동반'
         ]
       }
     ]
@@ -986,16 +916,11 @@ const DATA = {
         fu: '증상 호전 시 추가 진료 불필요. 1-2주 이상 통증 지속 또는 신경학적 증상 발생 시 정형외과/신경외과/재활의학과 외래 방문. 단기간 안정 후 점진적 활동 권유, 침상 안정은 1-2일 이내로 제한.',
         warn: [
           '대소변을 못 가리거나 소변/대변이 새는 경우 (마미증후군 - 응급)',
-          '회음부, 항문 주변, 또는 사타구니의 감각이 둔해지거나 마비됨',
-          '양쪽 다리에 점점 힘이 빠지거나 걸을 수 없게 됨',
-          '한쪽 또는 양쪽 다리에 새로운 마비/심한 감각 이상',
+          '회음부, 항문 주변, 또는 사타구니 감각 둔화/마비',
+          '양쪽 다리에 점점 힘이 빠지거나 걸을 수 없음',
           '발열(38℃ 이상) 동반 요통 (감염성/척추염 의심)',
-          '진통제로 조절되지 않는 극심한 통증, 특히 야간에 악화되는 통증',
-          '의도하지 않은 체중 감소 동반',
-          '외상 후 발생/악화된 통증',
-          '복부 통증, 흉부 통증, 또는 식은땀 동반 (대동맥류 등 감별)',
-          '암 환자 또는 면역저하 환자에서 발생한 새로운 요통',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '진통제로 조절되지 않는 극심한 통증, 특히 야간 악화',
+          '복부/흉부 통증, 식은땀 동반 (대동맥류 등)'
         ]
       },
       {
@@ -1025,17 +950,12 @@ const DATA = {
         ],
         fu: '증상 호전 시 추가 진료 불필요. 1-2주 이상 지속, 상지 방사통/감각 이상 발생 시 정형외과/신경외과/재활의학과 외래 방문. 장시간 같은 자세 회피, 스트레칭 권유.',
         warn: [
-          '상지 또는 양 손에 새로 발생한 마비, 힘 빠짐, 또는 감각 이상',
-          '양 손/발이 모두 저리거나 둔해짐, 보행 장애 (척수병증 의심)',
+          '상지 또는 양 손에 새로 발생한 마비, 힘 빠짐, 감각 이상',
+          '양 손/발이 모두 저리거나 둔해지고 보행 장애 (척수병증)',
           '대소변 조절 장애',
-          '심한 두통, 발열, 목이 뻣뻣함과 동반 (뇌수막염 감별)',
-          '외상 후 발생/악화된 경부통, 특히 사지 마비/감각 이상 동반',
+          '심한 두통, 발열, 목이 뻣뻣함 (뇌수막염 감별)',
           '의식 변화 또는 말 어눌함',
-          '38℃ 이상의 발열과 함께 경부 통증 (감염성 척추염/뇌수막염)',
-          '의도하지 않은 체중 감소 동반',
-          '진통제로 조절되지 않는 극심한 통증',
-          '가슴 통증, 호흡곤란, 또는 식은땀 동반 (심근경색 등 감별)',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '가슴 통증, 호흡곤란, 식은땀 (심근경색 감별)'
         ]
       }
     ]
@@ -1076,15 +996,10 @@ const DATA = {
         warn: [
           '38.5℃ 이상의 고열 또는 오한',
           '옆구리(허리 양옆) 통증 (신우신염 의심)',
-          '오심, 구토로 수분 섭취가 불가능',
-          '소변에서 다량의 출혈이나 핏덩어리',
+          '오심/구토로 수분 섭취 불가',
           '소변이 전혀 나오지 않거나 양이 현저히 감소',
           '심한 어지러움, 실신, 또는 의식 변화',
-          '항생제 복용 후 48-72시간 이상 증상 호전 없거나 악화',
-          '복부 또는 골반 통증이 점점 악화',
-          '항생제 알레르기 반응 (피부 발진, 가려움, 호흡곤란)',
-          '임신 중인 경우 모든 증상에 대해 적극적 재내원',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '항생제 알레르기 반응 (피부 발진, 호흡곤란)'
         ]
       },
       {
@@ -1128,12 +1043,7 @@ const DATA = {
           '심한 오심/구토로 수분 섭취 및 약 복용 불가',
           '소변량이 현저히 감소하거나 전혀 나오지 않음',
           '다량의 혈뇨 또는 핏덩어리 배출',
-          '의식 변화, 어지러움, 실신, 또는 식은땀',
-          '저혈압 증상 (창백, 차가운 손발, 빠른 맥박)',
-          '신장이 한쪽뿐이거나 신장 기능 저하 환자에서 결석 발생',
-          '단신(콩팥이 하나) 환자',
-          '임신 중인 경우 모든 통증/증상에 대해 적극적 재내원',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '실신, 의식 변화, 식은땀 (저혈압/패혈증)'
         ]
       }
     ]
@@ -1176,16 +1086,10 @@ const DATA = {
         fu: '증상 호전 시 추가 진료 불필요. 두드러기 6주 이상 지속(만성), 반복적 발생, 또는 아나필락시스 의심 시 알레르기내과 외래 방문하여 원인 평가. 가능한 원인(약물/음식/벌레 등) 회피 권유.',
         warn: [
           '입술/혀/목/얼굴이 붓는 경우 (혈관부종 - 응급)',
-          '호흡곤란, 숨이 차거나 천명음(쌕쌕거림)',
-          '목소리가 잠기거나 삼키기 어려움',
+          '호흡곤란, 천명음, 목소리 잠김',
           '심한 어지러움, 실신, 또는 의식 변화',
-          '가슴이 답답하거나 두근거림, 혈압 저하 증상',
-          '복부 통증, 구토, 또는 설사가 동반된 발진',
-          '발진이 전신으로 빠르게 확산',
-          '38.5℃ 이상의 발열 동반',
-          '피부 박리, 점막 침범, 또는 물집 형성 (Stevens-Johnson 의심)',
-          '두드러기와 함께 식은땀, 창백한 안색',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 특히 호흡곤란이나 입술 부종은 분초를 다투는 응급 상황입니다.'
+          '가슴 답답함, 두근거림, 혈압 저하',
+          '피부 박리, 점막 침범, 또는 물집 형성 (Stevens-Johnson 의심)'
         ]
       },
       {
@@ -1221,18 +1125,12 @@ const DATA = {
         ],
         fu: '2-3일 후 외과/피부과 외래 방문하여 임상 경과 평가. 항생제 처방대로 완복 권유. 환부 경계가 매직펜으로 표시되어 있으니, 발적이 그 경계를 넘어 확산되면 즉시 재내원.',
         warn: [
-          '발적/부종이 매직펜으로 표시한 경계를 넘어 빠르게 확산',
+          '발적/부종이 매직펜 표시 경계를 넘어 빠르게 확산',
           '38.5℃ 이상의 고열 또는 오한',
-          '극심한 통증이 진통제로 조절되지 않거나, 발적 정도에 비해 통증이 극심한 경우 (괴사성 근막염 의심 - 응급)',
-          '피부에 물집, 자색/검은 반점, 또는 괴사 소견 발생',
-          '환부에서 농성 분비물 또는 악취',
-          '의식 변화, 혼동, 또는 극심한 무기력 (패혈증 의심)',
-          '심한 어지러움, 실신, 저혈압 증상',
-          '림프관을 따라 붉은 선이 올라옴',
-          '항생제 복용 후 48-72시간 이상 증상 호전 없거나 악화',
-          '항생제 알레르기 반응 (피부 발진, 가려움, 호흡곤란)',
-          '당뇨/면역저하 환자: 모든 악화 증상에 대해 적극적 재내원',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '극심한 통증 또는 발적 정도에 비해 통증 과도 (괴사성 근막염 의심 - 응급)',
+          '피부에 물집, 자색/검은 반점, 또는 괴사 소견',
+          '의식 변화, 혼동, 또는 극심한 무기력 (패혈증)',
+          '림프관을 따라 붉은 선이 올라옴'
         ]
       },
       {
@@ -1267,18 +1165,12 @@ const DATA = {
         ],
         fu: '3-5일 후 피부과 외래 방문하여 임상 경과 평가. 항바이러스제 7일간 완복 권유. 발진 부위 만지지 않고 청결 유지, 수두 면역 없는 사람 및 임산부와의 접촉 회피.',
         warn: [
-          '안면, 특히 눈 주위 또는 코끝에 발진 발생/확산 (각막염/실명 위험 - 안과 응급)',
-          '눈에 빨갛게 충혈되거나 시야 이상',
-          '귀에 발진 발생과 함께 안면 마비 또는 청력 저하 (Ramsay-Hunt 의심)',
+          '안면, 특히 눈 주위/코끝 발진 (각막염/실명 위험 - 안과 응급)',
+          '귀 발진 + 안면 마비 또는 청력 저하 (Ramsay-Hunt)',
           '심한 두통, 발열, 목이 뻣뻣함 (뇌수막염 의심)',
           '의식 변화, 졸음, 혼동',
-          '발진이 한 분절을 넘어 양측 또는 광범위하게 확산',
-          '38.5℃ 이상의 고열 또는 오한',
-          '발진 부위 2차 세균 감염 의심 (농성 분비물, 발적 확산)',
-          '진통제로 조절되지 않는 극심한 통증',
-          '운동 마비 또는 대소변 조절 장애 (운동 신경 침범)',
-          '면역저하 환자(암/HIV/장기이식/스테로이드 복용): 모든 악화 증상',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '발진이 광범위하게 확산되거나 양측 발생',
+          '운동 마비 또는 대소변 조절 장애'
         ]
       }
     ]
@@ -1319,18 +1211,12 @@ const DATA = {
         ],
         fu: '증상 지속/반복 시 내과(소화기내과/순환기내과) 외래 방문하여 추가 평가. 심혈관 위험인자(고혈압/당뇨/이상지질혈증/흡연) 관리 권유. 위식도역류 의심 시 4주 후 약물 효과 평가.',
         warn: [
-          '흉통이 점점 심해지거나 가슴을 짓누르는 압박감/조이는 느낌',
-          '흉통이 좌측 팔, 어깨, 턱, 또는 등으로 방사되는 통증',
-          '식은땀과 함께 발생한 흉통',
-          '호흡곤란, 숨이 차거나 가쁜 호흡',
-          '실신 또는 의식 변화',
+          '흉통이 점점 심해지거나 가슴을 짓누르는 압박감',
+          '흉통이 좌측 팔, 어깨, 턱, 등으로 방사',
+          '식은땀 동반 흉통',
+          '호흡곤란 또는 실신',
           '갑자기 발생한 극심한 흉통 (대동맥 박리 의심)',
-          '심한 두근거림 또는 맥박이 불규칙함',
-          '구토와 함께 발생한 가슴/명치 통증',
-          '한쪽 다리의 부종/통증과 함께 발생한 흉통/호흡곤란 (폐색전증 의심)',
-          '운동 시 악화되는 흉통',
-          '특히 고혈압, 당뇨, 이상지질혈증, 흡연자, 가족력 있는 분: 모든 새로운 흉통에 대해 적극적 재내원',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 가슴 통증은 분초를 다투는 응급 상황일 수 있습니다.'
+          '한쪽 다리 부종/통증 + 흉통/호흡곤란 (폐색전증 의심)'
         ]
       },
       {
@@ -1362,17 +1248,12 @@ const DATA = {
         ],
         fu: '정신건강의학과 외래 방문 권유. 항불안제는 단기간만 복용하고 의존 위험 있어 정신과 의사와 상담 후 사용. 인지행동치료(CBT) 등 비약물 치료 효과적임 안내. 카페인/술/수면 부족 회피 권유.',
         warn: [
-          '가슴 통증이 점점 심해지거나 좌측 팔/턱/등으로 방사 (심혈관 원인 감별)',
-          '식은땀과 함께 지속되는 흉통/호흡곤란',
+          '가슴 통증이 점점 심해지거나 좌측 팔/턱/등으로 방사 (심혈관 감별)',
+          '식은땀 동반 흉통 또는 지속되는 호흡곤란',
           '실신 또는 의식 변화',
-          '심한 어지러움 또는 안정 시에도 지속되는 호흡곤란',
-          '심장이 불규칙하게 뛰거나 매우 빠른 맥박이 지속',
-          '발열, 두통, 목이 뻣뻣함 동반',
-          '한쪽 팔/다리 마비, 감각 이상, 발음 어눌함',
-          '자해 또는 자살 충동이 발생하는 경우',
-          '약물 복용 후 심한 졸음, 호흡 억제, 의식 저하',
-          '발작이 더욱 빈번해지거나 일상생활이 불가능한 정도로 악화',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다. 자살 충동이 있다면 자살예방상담전화(1393) 또는 정신건강위기상담(1577-0199)으로 즉시 연락하세요.'
+          '편측 마비, 감각 이상, 발음 어눌함',
+          '자해 또는 자살 충동',
+          '약물 복용 후 호흡 억제, 의식 저하'
         ]
       },
       {
@@ -1403,19 +1284,12 @@ const DATA = {
         ],
         fu: '실신 재발 시 또는 운동 중 실신/심계항진/가족력 있는 경우 순환기내과 외래 방문하여 24시간 holter, 심초음파 등 추가 평가. 충분한 수분/염분 섭취, 갑자기 일어서지 않기, 전조 증상 시 즉시 눕기 교육.',
         warn: [
-          '운동 중에 발생한 실신 또는 의식 소실 (심인성 의심 - 응급)',
+          '운동 중에 발생한 실신 (심인성 의심 - 응급)',
           '실신과 함께 흉통, 두근거림, 호흡곤란',
-          '실신 후 회복이 더디거나 의식이 명료하지 않음',
+          '실신 후 회복이 더디거나 의식이 명료치 않음',
           '경련을 동반한 의식 소실',
-          '실신 시 손상(두부 외상, 골절) 발생',
-          '편측 마비, 감각 이상, 말 어눌함, 시야 이상 (뇌졸중 감별)',
-          '심한 두통, 발열, 목이 뻣뻣함',
-          '심한 어지러움이 지속되거나 일어설 수 없음',
-          '소변/대변 실금, 혀를 깨문 흔적 (경련성 발작 감별)',
-          '실신의 빈도가 증가하거나 전조 증상 없이 발생',
-          '가족 중 젊은 나이에 돌연사한 분이 있는 경우',
-          '심장 질환이나 부정맥 병력이 있는 분',
-          '위 증상 중 하나라도 발생 시 즉시 응급실 재내원하시거나 119에 연락하시기 바랍니다.'
+          '편측 마비, 감각 이상, 시야 이상 (뇌졸중 감별)',
+          '심장 질환/부정맥 병력이 있거나 가족 중 젊은 나이에 돌연사한 분'
         ]
       }
     ]
@@ -1431,15 +1305,17 @@ let state = {
   tests: new Set(),
   decisions: new Set(),
   narrative: '',
-  narrativeEdited: false,   // 사용자가 textarea 직접 편집했는지
+  narrativeEdited: false,
   vars: {},
   rx: new Set(),
   fu: '',
   warn: new Set(),
+  dischargeStatus: new Set(),
   customTests: [],
   customDecisions: [],
   customRx: [],
   customWarn: [],
+  customDischargeStatus: [],
   extraNarrative: [],
   extraFu: []
 };
@@ -1533,6 +1409,18 @@ function renderForm() {
     </div>
 
     <div class="field">
+      <div class="field-label"><span><span class="ico">🏠</span>퇴원 시 환자상태</span><span class="hint">해당 항목 선택 (기본 미선택)</span></div>
+      <div class="chips">
+        ${getDischargeStatusOptions().map(s => `<span class="chip ds ${state.dischargeStatus.has(s) ? 'on' : ''}" onclick="toggleSet('dischargeStatus', this.dataset.v)" data-v="${escAttr(s)}">${s}</span>`).join('')}
+        ${state.customDischargeStatus.map((s, i) => `<span class="chip ds on" onclick="removeCustom('customDischargeStatus', ${i})"><span class="x">✕</span>${s}</span>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="추가 항목 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customDischargeStatus', this)">
+        <button onclick="addCustomBtn('customDischargeStatus', this.previousElementSibling)">추가</button>
+      </div>
+    </div>
+
+    <div class="field">
       <div class="field-label"><span><span class="ico">💊</span>퇴원 처방 (성분명)</span><span class="hint">필요한 것만 선택</span></div>
       <div class="chips">
         ${d.rx.map(t => `<span class="chip rx ${state.rx.has(t) ? 'on' : ''}" onclick="toggleSet('rx', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
@@ -1557,8 +1445,8 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label"><span><span class="ico">⚠️</span>재내원 주의사항 안내 항목</span><span class="hint">교육한 항목만 선택</span></div>
-      <div class="warn-note">아래 항목은 <b>환자/보호자에게 설명한 내용</b>으로 의무기록에 출력됩니다. 의료법적 방어를 위해 가능한 모든 적색기를 포함하는 것을 권장합니다.</div>
+      <div class="field-label"><span><span class="ico">⚠️</span>재내원 주의사항 안내 항목</span><span class="hint">기본 미선택, 환자에게 교육한 항목만 선택</span></div>
+      <div class="warn-note">아래 항목은 <b>환자/보호자에게 설명한 내용</b>으로 의무기록에 출력됩니다. 핵심 적색기만 추렸으니 환자 상황에 맞춰 선택하세요.</div>
       <div class="chips">
         ${d.warn.map(t => `<span class="chip warn ${state.warn.has(t) ? 'on' : ''}" onclick="toggleSet('warn', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
         ${state.customWarn.map((t, i) => `<span class="chip warn on" onclick="removeCustom('customWarn', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
@@ -1570,8 +1458,30 @@ function renderForm() {
     </div>
 
     <div class="field">
-      <div class="field-label"><span><span class="ico">📋</span>미리보기</span><span class="hint">복사 시 이 형식으로</span></div>
-      <div class="preview" id="preview">${escHtml(buildText())}</div>
+      <div class="field-label"><span><span class="ico">📋</span>미리보기</span><span class="hint">섹션별로 복사 가능</span></div>
+      <div class="preview-stack">
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="preview-title">■ 치료과정</span>
+            <button class="copy-section" onclick="copySection('tx')">📋 복사</button>
+          </div>
+          <div class="preview-body">${escHtml(buildTreatmentSection() || '(내용 없음)')}</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="preview-title">■ 추후계획</span>
+            <button class="copy-section" onclick="copySection('fu')">📋 복사</button>
+          </div>
+          <div class="preview-body">${escHtml(buildFollowupSection() || '(내용 없음)')}</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="preview-title">■ 퇴원 시 환자상태</span>
+            <button class="copy-section" onclick="copySection('status')">📋 복사</button>
+          </div>
+          <div class="preview-body">${escHtml(buildStatusSection() || '(항목을 선택하세요)')}</div>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -1594,7 +1504,8 @@ function selectDisease(id) {
   state.tests = new Set(d.tests);
   state.decisions = new Set();   // 응급실 처치는 의사가 시행한 것만 직접 선택
   state.rx = new Set();          // 처방도 직접 선택
-  state.warn = new Set(d.warn);  // 주의사항은 기본 모두 선택 (방어적)
+  state.warn = new Set();        // 주의사항도 기본 OFF — 환자별로 필요한 것만 선택
+  state.dischargeStatus = new Set();  // 퇴원 시 환자상태 - 기본 OFF
   state.vars = {};               // 변수는 모두 미선택으로 시작
   state.narrativeEdited = false;
   state.narrative = fillNarrative(d.narrative, state.vars, d);
@@ -1603,6 +1514,7 @@ function selectDisease(id) {
   state.customDecisions = [];
   state.customRx = [];
   state.customWarn = [];
+  state.customDischargeStatus = [];
   state.extraNarrative = [];
   state.extraFu = [];
   renderDiseases();
@@ -1651,6 +1563,7 @@ function clearForm() {
   state.decisions = new Set();
   state.rx = new Set();
   state.warn = new Set();
+  state.dischargeStatus = new Set();
   state.narrative = '';
   state.narrativeEdited = false;
   state.vars = {};
@@ -1659,6 +1572,7 @@ function clearForm() {
   state.customDecisions = [];
   state.customRx = [];
   state.customWarn = [];
+  state.customDischargeStatus = [];
   state.extraNarrative = [];
   state.extraFu = [];
 }
@@ -1674,74 +1588,139 @@ function resetAll() {
 }
 
 // ============================================================
-// 텍스트 생성
+// 텍스트 생성 — 3섹션 구조 (치료과정 / 추후계획 / 퇴원 시 환자상태)
 // ============================================================
-function buildText() {
+
+function buildDxLine() {
+  if (!state.disease) return '';
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  return `[퇴원진단] ${d.ko} (${d.en}, ${d.icd})`;
+}
+
+// 1. 치료과정: 시행한 검사 + 응급실 처치 + 진료 경과 + 퇴원 처방
+function buildTreatmentSection() {
   if (!state.disease) return '';
   const d = DATA[state.category].diseases.find(x => x.id === state.disease);
   const lines = [];
 
-  lines.push('[퇴원진단]');
-  lines.push(`- ${d.ko} (${d.en}, ${d.icd})`);
-  lines.push('');
-
   const allTests = [...state.tests, ...state.customTests];
   if (allTests.length) {
-    lines.push('[시행한 검사]');
-    allTests.forEach(t => lines.push(`- ${t}`));
+    lines.push('▷ 시행한 검사');
+    allTests.forEach(t => lines.push(`  - ${t}`));
     lines.push('');
   }
 
   const allDecisions = [...state.decisions, ...state.customDecisions];
   if (allDecisions.length) {
-    lines.push('[응급실 처치]');
-    allDecisions.forEach(t => lines.push(`- ${t}`));
+    lines.push('▷ 응급실 처치');
+    allDecisions.forEach(t => lines.push(`  - ${t}`));
     lines.push('');
   }
 
-  // narrative: 변수 미선택 시 [라벨] 형식 그대로 출력 (의사가 미리 보고 채울 수 있게)
   let narr = (state.narrative || d.narrative).trim();
-  // 혹시 사용자가 수동 편집했지만 vars가 있는 경우 vars 반영
   if (d.vars && narr.indexOf('{') !== -1) {
     narr = fillNarrative(narr, state.vars, d);
   }
-  // 추가 라인 합치기
   if (state.extraNarrative && state.extraNarrative.length) {
     narr = narr + '\n' + state.extraNarrative.map(t => t).join('\n');
   }
   if (narr) {
-    lines.push('[진료 경과 및 퇴원 시 상태]');
+    lines.push('▷ 진료 경과');
     lines.push(narr);
     lines.push('');
   }
 
   const allRx = [...state.rx, ...state.customRx];
   if (allRx.length) {
-    lines.push('[퇴원 처방]');
-    allRx.forEach((r, i) => lines.push(`${i + 1}. ${r}`));
-    lines.push('');
+    lines.push('▷ 퇴원 처방');
+    allRx.forEach((r, i) => lines.push(`  ${i + 1}. ${r}`));
   }
+
+  return lines.join('\n').trim();
+}
+
+// 2. 추후계획: 추후 진료 + 재내원 주의사항
+function buildFollowupSection() {
+  if (!state.disease) return '';
+  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
+  const lines = [];
 
   let fuText = (state.fu || d.fu).trim();
   if (state.extraFu && state.extraFu.length) {
     fuText = fuText + '\n' + state.extraFu.map(t => '- ' + t).join('\n');
   }
   if (fuText) {
-    lines.push('[추후 진료 계획]');
+    lines.push('▷ 추후 진료 계획');
     lines.push(fuText);
     lines.push('');
   }
 
   const allWarn = [...state.warn, ...state.customWarn];
   if (allWarn.length) {
-    lines.push('[재내원 주의사항 안내 (환자/보호자 교육)]');
-    lines.push('환자 및 보호자에게 아래와 같은 증상 발생 시 즉시 응급실로 재내원하거나 119에 연락하도록 충분히 설명하였으며, 환자 및 보호자가 해당 내용을 이해하였음을 확인함.');
-    allWarn.forEach(w => lines.push(`- ${w}`));
-    lines.push('');
-    lines.push('※ 본 안내사항은 진료 시점의 평가에 따른 것이며, 위에 명시되지 않은 증상이라도 변화가 있거나 새로운 증상이 발생할 경우 언제든지 의료기관 방문이 필요함을 함께 설명하였음. 환자/보호자의 추가 질문 없음을 확인하고 귀가 조치함.');
+    lines.push('▷ 재내원 주의사항 안내 (환자/보호자 교육 시행)');
+    lines.push('환자 및 보호자에게 아래 증상 발생 시 즉시 응급실 재내원 또는 119 연락하도록 설명하였으며, 충분히 이해하였음을 확인함.');
+    allWarn.forEach(w => lines.push(`  - ${w}`));
+    lines.push('※ 위에 명시되지 않은 증상이라도 변화/새로운 증상 발생 시 의료기관 방문이 필요함을 함께 설명하였음.');
   }
 
-  return lines.join('\n');
+  return lines.join('\n').trim();
+}
+
+// 3. 퇴원 시 환자상태: 체크리스트
+function buildStatusSection() {
+  if (!state.disease) return '';
+  const items = [...state.dischargeStatus, ...state.customDischargeStatus];
+  if (items.length === 0) return '';
+  return items.map(s => `- ${s}`).join('\n');
+}
+
+function buildText() {
+  if (!state.disease) return '';
+  const dx = buildDxLine();
+  const tx = buildTreatmentSection();
+  const fu = buildFollowupSection();
+  const status = buildStatusSection();
+
+  const sections = [dx];
+  if (tx) sections.push('\n■ 치료과정\n' + tx);
+  if (fu) sections.push('\n■ 추후계획\n' + fu);
+  if (status) sections.push('\n■ 퇴원 시 환자상태\n' + status);
+  return sections.join('\n');
+}
+
+// 섹션별 복사
+function copySection(which) {
+  let text = '';
+  let label = '';
+  if (which === 'tx') {
+    text = '■ 치료과정\n' + buildTreatmentSection();
+    label = '치료과정';
+  } else if (which === 'fu') {
+    text = '■ 추후계획\n' + buildFollowupSection();
+    label = '추후계획';
+  } else if (which === 'status') {
+    text = '■ 퇴원 시 환자상태\n' + buildStatusSection();
+    label = '퇴원 시 환자상태';
+  }
+  if (!text || text.trim().endsWith('■ ' + label)) {
+    showToast('내용이 없습니다', true);
+    return;
+  }
+  copyToClipboard(text, `✓ ${label} 복사 완료`);
+}
+
+function copyToClipboard(text, toastMsg) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast(toastMsg));
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast(toastMsg);
 }
 
 // ============================================================
@@ -1800,17 +1779,7 @@ function copyText() {
     showToast('진단을 먼저 선택하세요', true);
     return;
   }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => showToast('✓ 복사되었습니다'));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('✓ 복사되었습니다');
-  }
+  copyToClipboard(text, '✓ 전체 복사되었습니다');
 }
 
 function showToast(msg, isError) {
@@ -1840,6 +1809,28 @@ function formatTxList() {
   if (items.length === 1) return items[0];
   if (items.length === 2) return items.join(' 및 ');
   return items.slice(0, -1).join(', ') + ' 및 ' + items[items.length - 1];
+}
+
+// 퇴원 시 환자상태 옵션: 공통 + 카테고리별
+function getDischargeStatusOptions() {
+  const common = [
+    '활력징후 안정 (V/S stable)',
+    '의식 명료, 의사소통 가능',
+    '통증 호전 또는 견딜만한 수준',
+    '자가 보행 가능',
+    '환자 및 보호자에게 추후 진료 계획 설명, 이해 확인'
+  ];
+  const byCategory = {
+    resp: ['SpO2 정상 (실내 ≥95%)', '호흡곤란 호소 없음', '발열 없음'],
+    gi: ['경구 식이/수분 섭취 가능 확인', '탈수 소견 없음', '복통 호전'],
+    trauma: ['손상 부위 활동 출혈 없음', '신경학적 평가 정상 (motor/sensory)', '원위부 순환 정상', '드레싱/부목 적용 상태 양호'],
+    neuro: ['신경학적 진찰 정상', '의식 변화 없음', '두통 호전'],
+    msk: ['신경학적 평가 정상 (motor/sensory)', '체중 부하 또는 운동 가능'],
+    gu: ['발열 없음', '배뇨 가능, 수분 섭취 권장 안내'],
+    skin: ['호흡곤란/혈관부종 없음', '발진/소양감 호전'],
+    cv: ['ECG 정상, 부정맥 없음', '흉통 없음 또는 호전', '심전도 모니터링 동안 이상 소견 없음']
+  };
+  return [...common, ...(byCategory[state.category] || [])];
 }
 
 // 검사 칩에서 콜론 앞부분만 추출 ("CBC, CRP: WNL" → "CBC, CRP")
