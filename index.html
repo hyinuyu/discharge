@@ -1263,93 +1263,75 @@ let state = {
 
 // 진단별 핵심 임상 소견 (1-2 문장)
 const BRIEF = {
-  uri: '진찰상 상기도 점막 발적 외 특이 소견 없으며, 폐렴 등 합병증 시사 소견 없음.',
-  tonsil: '진찰상 편도 발적·종대 확인되었고, 상기도 폐쇄 의심 소견 없음.',
-  bronchitis: '폐 청진상 wheezing/rhonchi 청취되었고, 폐 실질 침윤 소견 없음.',
-  flu: 'Influenza 신속 항원 양성 확인, 폐렴 합병 소견 없음.',
-  pneumonia: '흉부 X-ray상 폐 실질 침윤 확인되어 지역사회 획득 폐렴으로 진단.',
-  age: '진찰 및 검사상 외과적 응급 질환 시사 소견 없음.',
-  gastritis: '심혈관 원인 감별 후 위염으로 진단.',
-  constip: '복부 X-ray상 대장 내 변 정체 외 외과적 응급 질환 소견 없음.',
-  gerd: '심혈관 원인 감별 후 위식도역류질환으로 진단.',
-  lac: '[부위] 약 [길이]의 단순 열상, 골절·이물질·신경/혈관 손상 의심 소견 없음.',
-  contusion: '해당 부위 골절·구획증후군 의심 소견 없음.',
-  sprain: '해당 관절 골절·탈구 소견 없음.',
-  headinj: '두부 CT상 두개내 출혈/골절 없고, 신경학적 결손 없음.',
-  burn: 'TBSA <10%, 중증 화상 소견 없음.',
-  tth: 'SNOOP4 등 두통의 적색기 없음.',
-  migraine: '신경학적 진찰 정상, 평소 편두통과 유사 양상.',
-  bppv: 'Dix-Hallpike 검사상 [측면] 양성, 중추성 결손 시사 소견 없음.',
-  lbp: '마미증후군 적색기 없고, 요추 X-ray상 골절 없음.',
-  neck: '경추 X-ray상 골절·불안정성 소견 없음.',
-  uti: '소변 검사상 백혈구뇨·아질산염 양성, 전신성 감염 시사 소견 없음.',
-  stone: '복부 CT상 [측면] [위치] 약 [크기] 결석 확인.',
-  urticaria: '아나필락시스 시사 소견 없음.',
-  cellulitis: '괴사성 근막염·농양 의심 소견 없음.',
-  zoster: '특징적인 단측성 띠 모양 수포성 발진 확인.',
-  ncp: 'ACS 등 흉통의 응급 원인 감별 후 비심인성 흉통으로 판단.',
-  panic: '심혈관/호흡기/대사성 원인 시사 소견 없음.',
-  syncope: '심인성 실신·대사성 원인 시사 소견 없음, 미주신경성 실신으로 판단.'
+  uri: '하기도 감염 시사 소견 없음',
+  tonsil: '상기도 폐쇄 시사 소견 없음',
+  bronchitis: '폐 실질 침윤 없음',
+  flu: 'Influenza Ag (+)',
+  pneumonia: 'CXR상 폐 침윤 확인',
+  age: '외과적 응급 질환 없음',
+  gastritis: '심혈관 원인 배제됨',
+  constip: '장폐색/외과적 응급 없음',
+  gerd: '심혈관 원인 배제됨',
+  lac: '[부위] [길이] 단순 열상, 골절/이물질/신경혈관 손상 없음',
+  contusion: '골절/구획증후군 없음',
+  sprain: '골절/탈구 없음',
+  headinj: 'Brain CT상 출혈/골절 없음',
+  burn: 'TBSA <10%, 중증 화상 아님',
+  tth: 'Red flag 없음',
+  migraine: 'Red flag 없음',
+  bppv: 'Dix-Hallpike [측면] (+), 중추성 결손 없음',
+  lbp: '마미증후군 적색기 없음',
+  neck: '경추 골절/불안정성 없음',
+  uti: '소변검사상 UTI 합당',
+  stone: 'CT상 [측면] [위치] [크기] 결석',
+  urticaria: '아나필락시스 시사 소견 없음',
+  cellulitis: '괴사성 근막염/농양 없음',
+  zoster: '단측성 띠 모양 수포성 발진 확인',
+  ncp: 'ACS 등 응급 흉통 배제됨',
+  panic: '심혈관/호흡기/대사성 원인 없음',
+  syncope: '심인성/대사성 원인 없음, 미주신경성'
 };
 
-// 짧은 narrative: 진단별 핵심 + 공통 결론
+// 짧은 narrative: 진단별 핵심 + 짧은 결론
 function simplifyNarrative(d) {
-  const brief = BRIEF[d.id] || '진찰 및 검사상 응급 질환 시사 소견 없음.';
-  return brief + ' 응급실 처치 후 증상 호전되어 활력징후 안정 확인 후 귀가 조치함.';
+  const brief = BRIEF[d.id] || '응급 질환 시사 소견 없음';
+  return brief + '. 처치 후 호전, V/S stable 확인 후 귀가.';
 }
 
 // 치료과정: 검사 + 처치 + 진료경과 + 처방
 function buildTreatment(d) {
   const tests = [...new Set(d.tests.map(t => t.split(':')[0].trim()))].join(', ');
-  // 처치 항목 끝에 이미 "시행"이 붙어있는 경우 제거 (중복 방지)
   const decisions = [...new Set(d.decisions)].slice(0, 4)
     .map(s => s.replace(/\s*시행\s*$/, '').trim())
     .join(', ');
-  const narrative = simplifyNarrative(d);
+  const brief = simplifyNarrative(d);
   return [
-    '▷ 시행한 검사',
-    tests + ' — 진단 합당 소견 외 특이 이상 없음.',
-    '',
-    '▷ 응급실 처치',
-    decisions + ' 시행.',
-    '',
-    '▷ 진료 경과',
-    narrative
+    '검사: ' + tests,
+    '처치: ' + decisions,
+    '경과: ' + brief
   ].join('\n');
 }
 
 // 추후계획: 추후 진료 + 재내원 주의사항
 function buildFollowup(d) {
-  const warns = d.warn.map(w => '- ' + w).join('\n');
-  return [
-    '▷ 추후 진료 계획',
-    d.fu,
-    '',
-    '▷ 재내원 주의사항 (환자/보호자 교육)',
-    warns
-  ].join('\n');
+  const warns = d.warn.map(w => '· ' + w).join('\n');
+  return d.fu + '\n\n[재내원 시 응급실 방문]\n' + warns;
 }
 
-// 퇴원 시 환자상태 (카테고리별 적절한 항목)
+// 퇴원 시 환자상태 (한 줄 슬래시 구분)
 function buildStatus(catKey) {
-  const common = [
-    '활력징후 안정',
-    '의식 명료',
-    '통증 호전',
-    '자가 보행 가능'
-  ];
+  const common = ['V/S stable', '통증 호전', '자가 보행 가능'];
   const byCategory = {
-    resp: ['호흡곤란 없음'],
+    resp: ['SpO₂ 정상'],
     gi: ['경구 식이 가능'],
-    trauma: ['신경학적 평가 정상'],
-    neuro: ['신경학적 진찰 정상'],
-    msk: ['신경학적 평가 정상'],
+    trauma: ['신경학적 정상'],
+    neuro: ['신경학적 정상'],
+    msk: ['신경학적 정상'],
     gu: ['배뇨 가능'],
     skin: ['혈관부종 없음'],
     cv: ['ECG 정상']
   };
-  const items = common.concat(byCategory[catKey] || []);
-  return items.map(s => '- ' + s).join('\n');
+  return common.concat(byCategory[catKey] || []).join(' / ');
 }
 
 // ──────────────────────────────────────────────
