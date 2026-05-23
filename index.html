@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>퇴원기록지 도우미</title>
 
-<!-- PWA (홈화면 추가 시 앱처럼 동작) -->
+<!-- PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,7 +22,6 @@
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
   :root {
-    /* 귀염뽀짝 파스텔 다크 테마 ♡ */
     --bg: #1a1525;
     --bg2: #221d2e;
     --bg3: #2a2438;
@@ -30,60 +29,55 @@
     --card-hover: #332b48;
     --border: #3a3151;
     --border2: #483e64;
-    --accent: #ff8db5;          /* 메인 핑크 */
-    --accent2: #e879a6;          /* 진한 핑크 */
+    --accent: #ff8db5;
+    --accent2: #e879a6;
     --accent-soft: rgba(255, 141, 181, 0.14);
-    --green: #7ee8c9;            /* 민트 */
-    --green-soft: rgba(126, 232, 201, 0.12);
-    --red: #ff7e8a;
-    --red-soft: rgba(255, 126, 138, 0.12);
+    --mint: #7ee8c9;
+    --mint-soft: rgba(126, 232, 201, 0.14);
     --yellow: #ffd680;
-    --yellow-soft: rgba(255, 214, 128, 0.12);
+    --yellow-soft: rgba(255, 214, 128, 0.14);
     --purple: #c8a5ff;
-    --purple-soft: rgba(200, 165, 255, 0.12);
-    --sky: #88c8ff;
-    --sky-soft: rgba(136, 200, 255, 0.12);
+    --purple-soft: rgba(200, 165, 255, 0.14);
+    --red: #ff7e8a;
     --text: #f5ecf7;
     --text2: #b8a8c8;
     --text3: #7d6e94;
     --mono: 'JetBrains Mono', monospace;
     --sans: 'Noto Sans KR', -apple-system, sans-serif;
-    --shadow-cute: 0 4px 20px rgba(255, 141, 181, 0.08);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
   body {
-    padding: 14px 14px 110px 14px;
+    padding: 14px 14px 110px;
     padding-top: max(14px, env(safe-area-inset-top));
     padding-bottom: max(110px, calc(110px + env(safe-area-inset-bottom)));
     max-width: 760px;
     margin: 0 auto;
     min-height: 100vh;
-    background-image: radial-gradient(ellipse at top, rgba(255, 141, 181, 0.06), transparent 60%);
+    background-image: radial-gradient(ellipse at top, rgba(255, 141, 181, 0.08), transparent 60%);
   }
-  .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 4px 16px 4px; }
-  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 6px; }
-  .header h1 .heart { font-size: 14px; }
-  .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); margin-left: 4px; }
-  .header .sub { font-size: 10.5px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; }
-  .header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1 1 auto; justify-content: flex-end; }
-  .share-btn, .blog-btn { flex-shrink: 0; }
-  .share-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: linear-gradient(135deg, var(--purple-soft), rgba(136, 200, 255, 0.15)); border: 0.5px solid var(--purple); color: var(--purple); cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
+
+  /* 헤더 */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 4px 4px 14px; gap: 8px; flex-wrap: wrap; }
+  .header h1 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 6px; letter-spacing: -0.02em; }
+  .header h1 .ver { color: var(--text3); font-weight: 400; font-size: 11px; font-family: var(--mono); }
+  .header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .pill-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; border: 0.5px solid; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
+  .pill-btn .txt { font-family: var(--mono); letter-spacing: -0.02em; }
+  .pill-btn:active { transform: scale(0.95); }
+  .share-btn { background: linear-gradient(135deg, var(--purple-soft), var(--mint-soft)); border-color: var(--purple); color: var(--purple); }
   .share-btn:hover { background: var(--purple); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200, 165, 255, 0.35); }
-  .share-btn:active { transform: scale(0.95); }
-  .share-btn .share-txt { font-family: var(--mono); letter-spacing: -0.02em; }
-  .blog-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; background: linear-gradient(135deg, var(--accent-soft), rgba(200, 165, 255, 0.15)); border: 0.5px solid var(--accent); color: var(--accent); text-decoration: none; font-size: 11px; font-weight: 600; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); }
+  .blog-btn { background: linear-gradient(135deg, var(--accent-soft), var(--purple-soft)); border-color: var(--accent); color: var(--accent); }
   .blog-btn:hover { background: var(--accent); color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 141, 181, 0.35); }
-  .blog-btn:active { transform: scale(0.95); }
-  .blog-btn .blog-txt { font-family: var(--mono); letter-spacing: -0.02em; }
+  .sub { font-size: 10.5px; color: var(--text3); font-family: var(--mono); }
 
-  .section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 8px 4px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-  .section-label .tag { display: inline-block; padding: 2px 7px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 9.5px; letter-spacing: 0.05em; text-transform: none; font-weight: 500; }
+  /* 라벨 */
+  .section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 4px 8px; font-weight: 600; }
 
-  /* 카테고리 - 여러 줄로 wrap, 카테고리별 색상 */
-  .cats { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 6px 0; }
-  .cat { padding: 9px 14px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); white-space: nowrap; font-weight: 500; }
-  .cat:hover { background: var(--card); color: var(--text); transform: translateY(-1px); }
+  /* 카테고리 (둥글둥글) */
+  .cats { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0; }
+  .cat { padding: 9px 14px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; font-weight: 500; }
+  .cat:hover { background: var(--card); color: var(--text); }
   .cat:active { transform: scale(0.96); }
   .cat.active { color: #fff; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transform: translateY(-1px); }
   .cat.active.c-resp { background: linear-gradient(135deg, #7ee8c9, #5fd4b0); border-color: #7ee8c9; }
@@ -97,140 +91,94 @@
 
   /* 질환 카드 */
   .diseases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-  .disease { padding: 12px 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: left; }
-  .disease:hover { background: var(--card-hover); border-color: var(--border2); transform: translateY(-2px); }
+  .disease { padding: 12px; background: var(--card); border: 0.5px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); text-align: left; }
+  .disease:hover { background: var(--card-hover); transform: translateY(-2px); }
   .disease:active { transform: scale(0.97); }
-  .disease.active { background: var(--accent-soft); border-color: var(--accent); box-shadow: var(--shadow-cute); }
+  .disease.active { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 4px 20px rgba(255, 141, 181, 0.15); }
   .disease.active .dko { color: var(--accent); }
-  .disease .dko { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
-  .disease .den { font-size: 9.5px; color: var(--text3); font-family: var(--mono); letter-spacing: -0.02em; line-height: 1.3; }
+  .disease .dko { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; line-height: 1.3; }
+  .disease .den { font-size: 9.5px; color: var(--text3); font-family: var(--mono); line-height: 1.3; }
 
-  /* 폼 */
-  .form { margin-top: 16px; }
-  .field { margin-bottom: 14px; }
-  .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 7px; padding: 0 4px; gap: 8px; font-weight: 600; }
-  .field-label .ico { margin-right: 4px; }
-  .field-label .hint { font-size: 10.5px; color: var(--text3); font-weight: 400; }
-  .field-label .reset-btn { background: var(--bg2); border: 0.5px solid var(--border); color: var(--text3); font-size: 10.5px; padding: 4px 10px; border-radius: 999px; cursor: pointer; font-family: var(--sans); font-weight: 500; transition: all 0.15s; }
-  .field-label .reset-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  /* 빈 상태 */
+  .empty { padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; grid-column: 1 / -1; }
+  .empty .e-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
 
-  input[type="text"], textarea { width: 100%; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 11px 14px; font-size: 13.5px; color: var(--text); font-family: var(--sans); resize: vertical; line-height: 1.65; transition: all 0.15s; }
-  input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--bg3); box-shadow: 0 0 0 3px var(--accent-soft); }
-  textarea { min-height: 110px; }
-  textarea.narrative { min-height: 150px; line-height: 1.7; }
+  /* 진단 카드 */
+  .dx-card { background: linear-gradient(135deg, var(--accent-soft), transparent), var(--card); border: 0.5px solid var(--accent); border-radius: 16px; padding: 14px 16px; margin: 16px 0; box-shadow: 0 4px 20px rgba(255, 141, 181, 0.08); }
+  .dx-card .dx-ko { font-size: 17px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+  .dx-card .dx-en { font-size: 11.5px; color: var(--text2); font-family: var(--mono); }
+  .dx-card .dx-icd { display: inline-block; font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 999px; margin-left: 6px; font-family: var(--mono); font-weight: 600; vertical-align: middle; }
 
-  /* 변수 칩 선택기 (narrative placeholders 자동 채우기) */
-  .vars-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
-  .vars-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-  .var-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; flex-wrap: wrap; }
-  .var-row + .var-row { border-top: 0.5px solid var(--border); padding-top: 8px; margin-top: 2px; }
-  .var-label { font-size: 11px; color: var(--text2); min-width: 58px; padding-top: 5px; font-weight: 500; }
-  .var-chips { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
-  .var-chip { padding: 4px 11px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg); color: var(--text2); font-size: 11.5px; cursor: pointer; transition: all 0.12s; font-family: var(--sans); white-space: nowrap; }
-  .var-chip:hover { color: var(--text); border-color: var(--border2); }
-  .var-chip:active { transform: scale(0.94); }
-  .var-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; box-shadow: 0 2px 8px rgba(255, 141, 181, 0.3); }
+  /* 3섹션 카드 */
+  .section { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 16px; margin-bottom: 14px; overflow: hidden; transition: border-color 0.15s; }
+  .section:hover { border-color: var(--border2); }
+  .section.s-tx { box-shadow: 0 4px 20px rgba(255, 141, 181, 0.06); }
+  .section.s-fu { box-shadow: 0 4px 20px rgba(126, 232, 201, 0.06); }
+  .section.s-st { box-shadow: 0 4px 20px rgba(255, 214, 128, 0.06); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; gap: 10px; }
+  .section.s-tx .section-head { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+  .section.s-fu .section-head { background: linear-gradient(90deg, var(--mint-soft), transparent); }
+  .section.s-st .section-head { background: linear-gradient(90deg, var(--yellow-soft), transparent); }
+  .section-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .section.s-tx .section-title { color: var(--accent); }
+  .section.s-fu .section-title { color: var(--mint); }
+  .section.s-st .section-title { color: var(--yellow); }
+  .copy-btn { padding: 6px 12px; border-radius: 999px; border: 0.5px solid; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); font-family: var(--sans); background: transparent; }
+  .copy-btn:active { transform: scale(0.94); }
+  .section.s-tx .copy-btn { border-color: var(--accent); color: var(--accent); }
+  .section.s-tx .copy-btn:hover { background: var(--accent); color: #fff; }
+  .section.s-fu .copy-btn { border-color: var(--mint); color: var(--mint); }
+  .section.s-fu .copy-btn:hover { background: var(--mint); color: #0d3528; }
+  .section.s-st .copy-btn { border-color: var(--yellow); color: var(--yellow); }
+  .section.s-st .copy-btn:hover { background: var(--yellow); color: #3d2e0a; }
 
-  /* 일반 칩 - 카테고리별 색상 */
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0; }
-  .chip { padding: 7px 12px; border-radius: 999px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; user-select: none; transition: all 0.15s; font-family: var(--sans); line-height: 1.4; font-weight: 500; }
-  .chip:hover { color: var(--text); border-color: var(--border2); }
-  .chip:active { transform: scale(0.96); }
-  .chip.on { background: var(--sky-soft); color: var(--sky); border-color: var(--sky); }
-  .chip.tx.on { background: var(--yellow-soft); color: var(--yellow); border-color: var(--yellow); }
-  .chip.rx.on { background: var(--green-soft); color: var(--green); border-color: var(--green); }
-  .chip.warn.on { background: var(--red-soft); color: var(--red); border-color: var(--red); }
-  .chip.ds.on { background: var(--purple-soft); color: var(--purple); border-color: var(--purple); }
-  .chip .x { color: var(--text3); margin-right: 4px; font-size: 10px; }
+  textarea { width: 100%; background: transparent; border: none; padding: 12px 16px; font-size: 13.5px; color: var(--text); font-family: var(--sans); resize: vertical; line-height: 1.7; min-height: 140px; }
+  textarea:focus { outline: none; background: var(--bg3); }
+  .section.s-tx textarea { min-height: 200px; }
+  .section.s-st textarea { min-height: 120px; }
 
-  /* 하단 액션 바 */
-  .bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 14px 14px 14px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 65%, rgba(26, 21, 37, 0.85) 85%, transparent); display: flex; gap: 8px; max-width: 760px; margin: 0 auto; z-index: 10; backdrop-filter: blur(8px); }
-  .btn { flex: 1; padding: 15px; border-radius: 14px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--sans); letter-spacing: -0.01em; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  /* 하단 버튼 */
+  .bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 14px 14px; padding-bottom: max(14px, env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 65%, rgba(26, 21, 37, 0.85) 85%, transparent); display: flex; gap: 8px; max-width: 760px; margin: 0 auto; z-index: 10; backdrop-filter: blur(8px); }
+  .btn { flex: 1; padding: 15px; border-radius: 14px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--sans); transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 4px 16px rgba(255, 141, 181, 0.35); }
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255, 141, 181, 0.45); }
   .btn-primary:active { transform: scale(0.97); }
-  .btn-secondary { background: var(--card); color: var(--text2); border: 0.5px solid var(--border); flex: 0 0 100px; }
+  .btn-secondary { flex: 0 0 100px; background: var(--card); color: var(--text2); border: 0.5px solid var(--border); }
   .btn-secondary:hover { color: var(--text); background: var(--card-hover); }
   .btn-secondary:active { transform: scale(0.97); }
 
   /* 토스트 */
-  .toast { position: fixed; top: 16px; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--green), #5fd4b0); color: #0d3528; padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(126, 232, 201, 0.35); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; }
+  .toast { position: fixed; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; background: linear-gradient(135deg, var(--mint), #5fd4b0); color: #0d3528; box-shadow: 0 8px 24px rgba(126, 232, 201, 0.35); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
-
-  /* 빈 상태 */
-  .empty { grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: var(--text3); font-size: 13px; }
-  .empty .e-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
-
-  /* 진단 카드 (선택된 질환) */
-  .dx-card { background: linear-gradient(135deg, var(--accent-soft), transparent), var(--card); border: 0.5px solid var(--accent); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; box-shadow: var(--shadow-cute); }
-  .dx-card .dx-ko { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
-  .dx-card .dx-en { font-size: 11.5px; color: var(--text2); font-family: var(--mono); letter-spacing: -0.02em; }
-  .dx-card .dx-icd { display: inline-block; font-size: 10px; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 999px; margin-left: 6px; font-family: var(--mono); font-weight: 600; vertical-align: middle; }
-
-  /* 커스텀 추가 입력 */
-  .add-row { display: flex; gap: 6px; margin-top: 8px; }
-  .add-row input { flex: 1; font-size: 12px; padding: 8px 12px; border-radius: 10px; }
-  .add-row button { background: var(--accent-soft); color: var(--accent); border: 0.5px solid var(--accent); padding: 8px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; font-family: var(--sans); white-space: nowrap; font-weight: 600; transition: all 0.15s; }
-  .add-row button:hover { background: var(--accent); color: #fff; }
-  .add-row button:active { transform: scale(0.96); }
-
-  /* 미리보기 - 3섹션 카드 */
-  .preview-stack { display: flex; flex-direction: column; gap: 8px; }
-  .preview-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .preview-card:hover { border-color: var(--border2); }
-  .preview-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; background: var(--bg3); border-bottom: 0.5px solid var(--border); }
-  .preview-title { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
-  .copy-section { background: var(--accent-soft); color: var(--accent); border: 0.5px solid var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all 0.15s; }
-  .copy-section:hover { background: var(--accent); color: #fff; transform: translateY(-1px); }
-  .copy-section:active { transform: scale(0.96); }
-  .preview-body { padding: 12px 14px; font-family: var(--mono); font-size: 11.5px; color: var(--text2); white-space: pre-wrap; line-height: 1.65; max-height: 260px; overflow-y: auto; }
-  .preview-body::-webkit-scrollbar { width: 6px; }
-  .preview-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-  /* 경고 메모 */
-  .warn-note { background: var(--red-soft); border-left: 3px solid var(--red); color: var(--text2); font-size: 11px; padding: 9px 11px; border-radius: 8px; margin-bottom: 8px; line-height: 1.55; }
-  .edit-hint { font-size: 10.5px; color: var(--text3); margin-top: 6px; padding: 0 4px; line-height: 1.5; }
-  .edit-note { font-size: 11px; color: var(--yellow); background: var(--yellow-soft); border-left: 3px solid var(--yellow); padding: 7px 10px; border-radius: 6px; margin-top: 6px; line-height: 1.5; }
-  .edit-note b { color: var(--accent); }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1><span class="heart">🩺</span>퇴원기록지 도우미 <span class="ver">v3.0</span></h1>
+  <h1>🩺 퇴원기록지 도우미 <span class="ver">v5.0</span></h1>
   <div class="header-right">
-    <button class="share-btn" onclick="shareApp()" title="앱 링크 공유">
-      <span>💌</span><span class="share-txt">공유</span>
-    </button>
-    <a class="blog-btn" href="https://blog.naver.com/hyinuyu" target="_blank" rel="noopener" title="작성자 블로그 ♡">
-      <span>💗</span><span class="blog-txt">blog</span>
-    </a>
+    <button class="pill-btn share-btn" onclick="shareApp()"><span>💌</span><span class="txt">공유</span></button>
+    <a class="pill-btn blog-btn" href="https://blog.naver.com/hyinuyu" target="_blank" rel="noopener"><span>💗</span><span class="txt">blog</span></a>
     <span class="sub" id="time-now"></span>
   </div>
 </div>
 
-<div class="section-label">대분류 <span class="tag">탭하여 선택</span></div>
+<div class="section-label">대분류</div>
 <div class="cats" id="cats"></div>
 
 <div class="section-label">진단 선택</div>
 <div class="diseases" id="diseases"></div>
 
-<div id="form-area" class="form"></div>
+<div id="form-area"></div>
 
 <div class="bottom">
   <button class="btn btn-secondary" onclick="resetAll()">초기화</button>
-  <button class="btn btn-primary" onclick="copyText()">복사</button>
+  <button class="btn btn-primary" onclick="copyAll()">전체 복사</button>
 </div>
 
-<div class="toast" id="toast">✓ 복사되었습니다</div>
+<div class="toast" id="toast">✓ 복사 완료</div>
 
 <script>
-// ============================================================
-// 데이터: 응급실 호발 질환별 퇴원기록 템플릿
-// 처방은 성분명(영문) 우선, 응급실 처치는 결정 위주
-// 진료 경과는 의료법적 방어 가능한 수준의 narrative
-// 재내원 주의사항은 적색기 + 시간 기준 + 119 명시
-// ============================================================
 const DATA = {
   resp: {
     name: '🫁 호흡기/감염',
@@ -1296,523 +1244,71 @@ const DATA = {
   }
 };
 
-// ============================================================
+// ──────────────────────────────────────────────
 // 상태
-// ============================================================
+// ──────────────────────────────────────────────
 let state = {
   category: null,
   disease: null,
-  tests: new Set(),
-  decisions: new Set(),
-  narrative: '',
-  narrativeEdited: false,
-  vars: {},
-  rx: new Set(),
-  fu: '',
-  warn: new Set(),
-  dischargeStatus: new Set(),
-  customTests: [],
-  customDecisions: [],
-  customRx: [],
-  customWarn: [],
-  customDischargeStatus: [],
-  extraNarrative: [],
-  extraFu: []
+  treatment: '',   // 치료과정 textarea 내용
+  followup: '',    // 추후계획 textarea 내용
+  status: ''       // 퇴원 시 환자상태 textarea 내용
 };
 
-// ============================================================
-// 렌더링
-// ============================================================
-function renderCats() {
-  const el = document.getElementById('cats');
-  el.innerHTML = Object.entries(DATA).map(([key, cat]) =>
-    `<button class="cat c-${key} ${state.category === key ? 'active' : ''}" onclick="selectCat('${key}')">${cat.name}</button>`
-  ).join('');
-}
+// ──────────────────────────────────────────────
+// 자동 채우기 — 각 질환의 데이터를 3섹션 텍스트로 변환
+// ──────────────────────────────────────────────
 
-function renderDiseases() {
-  const el = document.getElementById('diseases');
-  if (!state.category) {
-    el.innerHTML = '<div class="empty"><div class="e-icon">↑</div>먼저 대분류를 선택하세요</div>';
-    return;
-  }
-  const diseases = DATA[state.category].diseases;
-  el.innerHTML = diseases.map(d =>
-    `<button class="disease ${state.disease === d.id ? 'active' : ''}" onclick="selectDisease('${d.id}')">
-      <div class="dko">${d.ko}</div>
-      <div class="den">${d.en.length > 36 ? d.en.slice(0, 34) + '…' : d.en} · ${d.icd}</div>
-    </button>`
-  ).join('');
-}
-
-function renderForm() {
-  const el = document.getElementById('form-area');
-  if (!state.disease) {
-    el.innerHTML = '<div class="empty" style="margin-top:40px;"><div class="e-icon">📋</div>진단을 선택하면<br>퇴원기록지 양식이 나타납니다</div>';
-    return;
-  }
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  el.innerHTML = `
-    <div class="dx-card">
-      <div class="dx-ko">${d.ko}<span class="dx-icd">${d.icd}</span></div>
-      <div class="dx-en">${d.en}</div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">🔬</span>시행한 검사</span><span class="hint">기본 미선택, 시행한 검사만 선택</span></div>
-      <div class="chips">
-        ${d.tests.map(t => `<span class="chip ${state.tests.has(t) ? 'on' : ''}" onclick="toggleSet('tests', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
-        ${state.customTests.map((t, i) => `<span class="chip on" onclick="removeCustom('customTests', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
-      </div>
-      <div class="add-row">
-        <input type="text" placeholder="추가 검사 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customTests', this)">
-        <button onclick="addCustomBtn('customTests', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">⚡</span>응급실 처치</span><span class="hint">시행한 것만 선택</span></div>
-      <div class="chips">
-        ${d.decisions.map(t => `<span class="chip tx ${state.decisions.has(t) ? 'on' : ''}" onclick="toggleSet('decisions', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
-        ${state.customDecisions.map((t, i) => `<span class="chip tx on" onclick="removeCustom('customDecisions', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
-      </div>
-      <div class="add-row">
-        <input type="text" placeholder="추가 처치 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customDecisions', this)">
-        <button onclick="addCustomBtn('customDecisions', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">📝</span>진료 경과 / 퇴원 시 상태</span>
-        <button class="reset-btn" onclick="resetNarrative()">🔄 템플릿 다시</button>
-      </div>
-      ${d.vars && d.vars.length ? `
-        <div class="vars-box">
-          <div class="vars-title">⚡ 빠른 채우기 — 칩을 탭하면 본문에 자동 입력</div>
-          ${d.vars.map(v => `
-            <div class="var-row">
-              <div class="var-label">${v.label}</div>
-              <div class="var-chips">
-                ${v.options.map(o => `<span class="var-chip ${state.vars[v.key] === o ? 'on' : ''}" onclick="selectVar('${escAttr(v.key)}', this.dataset.v)" data-v="${escAttr(o)}">${o}</span>`).join('')}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      ` : ''}
-      <textarea class="narrative" placeholder="진료 경과 요약" oninput="state.narrative=this.value; state.narrativeEdited=true;">${state.narrative || d.narrative}</textarea>
-      ${state.narrativeEdited ? '<div class="edit-note">✏️ 직접 편집 중이라 검사/처치 칩 토글 시 본문이 자동 갱신되지 않아요. 자동 갱신으로 돌아가려면 <b>🔄 템플릿 다시</b> 클릭.</div>' : '<div class="edit-hint">💡 검사/처치 칩을 탭하면 본문이 자동으로 동기화돼요</div>'}
-      ${state.extraNarrative.length ? `<div class="chips" style="margin-top:8px;">${state.extraNarrative.map((t, i) => `<span class="chip on" onclick="removeCustom('extraNarrative', ${i})"><span class="x">✕</span>${t}</span>`).join('')}</div>` : ''}
-      <div class="add-row">
-        <input type="text" placeholder="추가 내용 입력 후 Enter (예: 보호자 입회 하 설명)" onkeydown="if(event.key==='Enter') addCustomBtn('extraNarrative', this)">
-        <button onclick="addCustomBtn('extraNarrative', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">🏠</span>퇴원 시 환자상태</span><span class="hint">해당 항목 선택 (기본 미선택)</span></div>
-      <div class="chips">
-        ${getDischargeStatusOptions().map(s => `<span class="chip ds ${state.dischargeStatus.has(s) ? 'on' : ''}" onclick="toggleSet('dischargeStatus', this.dataset.v)" data-v="${escAttr(s)}">${s}</span>`).join('')}
-        ${state.customDischargeStatus.map((s, i) => `<span class="chip ds on" onclick="removeCustom('customDischargeStatus', ${i})"><span class="x">✕</span>${s}</span>`).join('')}
-      </div>
-      <div class="add-row">
-        <input type="text" placeholder="추가 항목 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customDischargeStatus', this)">
-        <button onclick="addCustomBtn('customDischargeStatus', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">💊</span>퇴원 처방 (성분명)</span><span class="hint">필요한 것만 선택</span></div>
-      <div class="chips">
-        ${d.rx.map(t => `<span class="chip rx ${state.rx.has(t) ? 'on' : ''}" onclick="toggleSet('rx', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
-        ${state.customRx.map((t, i) => `<span class="chip rx on" onclick="removeCustom('customRx', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
-      </div>
-      <div class="add-row">
-        <input type="text" placeholder="추가 처방 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customRx', this)">
-        <button onclick="addCustomBtn('customRx', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">📅</span>추후 진료 계획</span>
-        <button class="reset-btn" onclick="resetFu()">🔄 기본값</button>
-      </div>
-      <textarea oninput="state.fu=this.value">${state.fu || d.fu}</textarea>
-      ${state.extraFu.length ? `<div class="chips" style="margin-top:8px;">${state.extraFu.map((t, i) => `<span class="chip on" onclick="removeCustom('extraFu', ${i})"><span class="x">✕</span>${t}</span>`).join('')}</div>` : ''}
-      <div class="add-row">
-        <input type="text" placeholder="추가 계획 입력 후 Enter (예: 1주 뒤 외래)" onkeydown="if(event.key==='Enter') addCustomBtn('extraFu', this)">
-        <button onclick="addCustomBtn('extraFu', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">⚠️</span>재내원 주의사항 안내 항목</span><span class="hint">기본 미선택, 환자에게 교육한 항목만 선택</span></div>
-      <div class="warn-note">아래 항목은 <b>환자/보호자에게 설명한 내용</b>으로 의무기록에 출력됩니다. 핵심 적색기만 추렸으니 환자 상황에 맞춰 선택하세요.</div>
-      <div class="chips">
-        ${d.warn.map(t => `<span class="chip warn ${state.warn.has(t) ? 'on' : ''}" onclick="toggleSet('warn', this.dataset.v)" data-v="${escAttr(t)}">${t}</span>`).join('')}
-        ${state.customWarn.map((t, i) => `<span class="chip warn on" onclick="removeCustom('customWarn', ${i})"><span class="x">✕</span>${t}</span>`).join('')}
-      </div>
-      <div class="add-row">
-        <input type="text" placeholder="추가 주의사항 입력 후 Enter" onkeydown="if(event.key==='Enter') addCustomBtn('customWarn', this)">
-        <button onclick="addCustomBtn('customWarn', this.previousElementSibling)">추가</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label"><span><span class="ico">📋</span>미리보기</span><span class="hint">섹션별로 복사 가능</span></div>
-      <div class="preview-stack">
-        <div class="preview-card">
-          <div class="preview-head">
-            <span class="preview-title">■ 치료과정</span>
-            <button class="copy-section" onclick="copySection('tx')">📋 복사</button>
-          </div>
-          <div class="preview-body">${escHtml(buildTreatmentSection() || '(내용 없음)')}</div>
-        </div>
-        <div class="preview-card">
-          <div class="preview-head">
-            <span class="preview-title">■ 추후계획</span>
-            <button class="copy-section" onclick="copySection('fu')">📋 복사</button>
-          </div>
-          <div class="preview-body">${escHtml(buildFollowupSection() || '(내용 없음)')}</div>
-        </div>
-        <div class="preview-card">
-          <div class="preview-head">
-            <span class="preview-title">■ 퇴원 시 환자상태</span>
-            <button class="copy-section" onclick="copySection('status')">📋 복사</button>
-          </div>
-          <div class="preview-body">${escHtml(buildStatusSection() || '(항목을 선택하세요)')}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ============================================================
-// 이벤트
-// ============================================================
-function selectCat(key) {
-  state.category = key;
-  state.disease = null;
-  clearForm();
-  renderCats();
-  renderDiseases();
-  renderForm();
-}
-
-function selectDisease(id) {
-  state.disease = id;
-  const d = DATA[state.category].diseases.find(x => x.id === id);
-  state.tests = new Set();       // 검사도 기본 OFF — 실제 시행한 것만 선택
-  state.decisions = new Set();   // 응급실 처치는 의사가 시행한 것만 직접 선택
-  state.rx = new Set();          // 처방도 직접 선택
-  state.warn = new Set();        // 주의사항도 기본 OFF — 환자별로 필요한 것만 선택
-  state.dischargeStatus = new Set();  // 퇴원 시 환자상태 - 기본 OFF
-  state.vars = {};               // 변수는 모두 미선택으로 시작
-  state.narrativeEdited = false;
-  state.narrative = fillNarrative(d.narrative, state.vars, d);
-  state.fu = d.fu;
-  state.customTests = [];
-  state.customDecisions = [];
-  state.customRx = [];
-  state.customWarn = [];
-  state.customDischargeStatus = [];
-  state.extraNarrative = [];
-  state.extraFu = [];
-  renderDiseases();
-  renderForm();
-}
-
-function toggleSet(setName, val) {
-  if (state[setName].has(val)) state[setName].delete(val);
-  else state[setName].add(val);
-  // 검사 또는 처치가 변경되면 narrative 재생성 (사용자가 직접 편집하지 않았을 때만)
-  if ((setName === 'tests' || setName === 'decisions') && !state.narrativeEdited && state.disease) {
-    const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-    state.narrative = fillNarrative(d.narrative, state.vars, d);
-  }
-  renderForm();
-}
-
-function addCustomBtn(listName, inputEl) {
-  const v = (inputEl.value || '').trim();
-  if (v) {
-    state[listName].push(v);
-    renderForm();
-  }
-}
-
-function removeCustom(listName, idx) {
-  state[listName].splice(idx, 1);
-  renderForm();
-}
-
-function resetNarrative() {
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  state.narrativeEdited = false;
-  state.narrative = fillNarrative(d.narrative, state.vars, d);
-  renderForm();
-}
-
-function resetFu() {
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  state.fu = d.fu;
-  renderForm();
-}
-
-function clearForm() {
-  state.tests = new Set();
-  state.decisions = new Set();
-  state.rx = new Set();
-  state.warn = new Set();
-  state.dischargeStatus = new Set();
-  state.narrative = '';
-  state.narrativeEdited = false;
-  state.vars = {};
-  state.fu = '';
-  state.customTests = [];
-  state.customDecisions = [];
-  state.customRx = [];
-  state.customWarn = [];
-  state.customDischargeStatus = [];
-  state.extraNarrative = [];
-  state.extraFu = [];
-}
-
-function resetAll() {
-  if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
-  state.category = null;
-  state.disease = null;
-  clearForm();
-  renderCats();
-  renderDiseases();
-  renderForm();
-}
-
-// ============================================================
-// 텍스트 생성 — 3섹션 구조 (치료과정 / 추후계획 / 퇴원 시 환자상태)
-// ============================================================
-
-function buildDxLine() {
-  if (!state.disease) return '';
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  return `[퇴원진단] ${d.ko} (${d.en}, ${d.icd})`;
-}
-
-// 1. 치료과정: 시행한 검사 + 응급실 처치 + 진료 경과 + 퇴원 처방
-function buildTreatmentSection() {
-  if (!state.disease) return '';
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  const lines = [];
-
-  const allTests = [...state.tests, ...state.customTests];
-  if (allTests.length) {
-    lines.push('▷ 시행한 검사');
-    allTests.forEach(t => lines.push(`  - ${t}`));
-    lines.push('');
-  }
-
-  const allDecisions = [...state.decisions, ...state.customDecisions];
-  if (allDecisions.length) {
-    lines.push('▷ 응급실 처치');
-    allDecisions.forEach(t => lines.push(`  - ${t}`));
-    lines.push('');
-  }
-
-  let narr = (state.narrative || d.narrative).trim();
-  if (d.vars && narr.indexOf('{') !== -1) {
-    narr = fillNarrative(narr, state.vars, d);
-  }
-  if (state.extraNarrative && state.extraNarrative.length) {
-    narr = narr + '\n' + state.extraNarrative.map(t => t).join('\n');
-  }
-  if (narr) {
-    lines.push('▷ 진료 경과');
-    lines.push(narr);
-    lines.push('');
-  }
-
-  const allRx = [...state.rx, ...state.customRx];
-  if (allRx.length) {
-    lines.push('▷ 퇴원 처방');
-    allRx.forEach((r, i) => lines.push(`  ${i + 1}. ${r}`));
-  }
-
-  return lines.join('\n').trim();
-}
-
-// 2. 추후계획: 추후 진료 + 재내원 주의사항
-function buildFollowupSection() {
-  if (!state.disease) return '';
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  const lines = [];
-
-  let fuText = (state.fu || d.fu).trim();
-  if (state.extraFu && state.extraFu.length) {
-    fuText = fuText + '\n' + state.extraFu.map(t => '- ' + t).join('\n');
-  }
-  if (fuText) {
-    lines.push('▷ 추후 진료 계획');
-    lines.push(fuText);
-    lines.push('');
-  }
-
-  const allWarn = [...state.warn, ...state.customWarn];
-  if (allWarn.length) {
-    lines.push('▷ 재내원 주의사항 안내 (환자/보호자 교육 시행)');
-    lines.push('환자 및 보호자에게 아래 증상 발생 시 즉시 응급실 재내원 또는 119 연락하도록 설명하였으며, 충분히 이해하였음을 확인함.');
-    allWarn.forEach(w => lines.push(`  - ${w}`));
-    lines.push('※ 위에 명시되지 않은 증상이라도 변화/새로운 증상 발생 시 의료기관 방문이 필요함을 함께 설명하였음.');
-  }
-
-  return lines.join('\n').trim();
-}
-
-// 3. 퇴원 시 환자상태: 체크리스트
-function buildStatusSection() {
-  if (!state.disease) return '';
-  const items = [...state.dischargeStatus, ...state.customDischargeStatus];
-  if (items.length === 0) return '';
-  return items.map(s => `- ${s}`).join('\n');
-}
-
-function buildText() {
-  if (!state.disease) return '';
-  const dx = buildDxLine();
-  const tx = buildTreatmentSection();
-  const fu = buildFollowupSection();
-  const status = buildStatusSection();
-
-  const sections = [dx];
-  if (tx) sections.push('\n■ 치료과정\n' + tx);
-  if (fu) sections.push('\n■ 추후계획\n' + fu);
-  if (status) sections.push('\n■ 퇴원 시 환자상태\n' + status);
-  return sections.join('\n');
-}
-
-// 섹션별 복사
-function copySection(which) {
-  let text = '';
-  let label = '';
-  if (which === 'tx') {
-    text = '■ 치료과정\n' + buildTreatmentSection();
-    label = '치료과정';
-  } else if (which === 'fu') {
-    text = '■ 추후계획\n' + buildFollowupSection();
-    label = '추후계획';
-  } else if (which === 'status') {
-    text = '■ 퇴원 시 환자상태\n' + buildStatusSection();
-    label = '퇴원 시 환자상태';
-  }
-  if (!text || text.trim().endsWith('■ ' + label)) {
-    showToast('내용이 없습니다', true);
-    return;
-  }
-  copyToClipboard(text, `✓ ${label} 복사 완료`);
-}
-
-function copyToClipboard(text, toastMsg) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => showToast(toastMsg));
-    return;
-  }
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  document.body.removeChild(ta);
-  showToast(toastMsg);
-}
-
-// ============================================================
-// 공유 (Web Share API + 클립보드 fallback)
-// ============================================================
-async function shareApp() {
-  const url = window.location.href;
-  const shareData = {
-    title: '퇴원기록지 도우미',
-    text: '응급실 퇴원기록지 빠른 작성 도구 🩺💗',
-    url: url
-  };
-
-  // 모바일: 네이티브 공유 시트 (카톡/메시지 등 바로 선택 가능)
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-      return; // 성공
-    } catch (e) {
-      if (e.name === 'AbortError') return; // 사용자가 공유 취소
-      // 그 외 에러는 클립보드 fallback
+// narrative의 {tx}, {tests}, {site} 등 placeholder를 자연어로 대체
+function simplifyNarrative(d) {
+  let narr = d.narrative;
+  narr = narr.replace(/\{tx\}/g, '정맥 진통제/수액 등 응급 처치');
+  narr = narr.replace(/\{tests\}/g, '응급실 평가 및 기본 검사');
+  if (d.vars) {
+    for (const v of d.vars) {
+      narr = narr.replace(new RegExp('\\{' + v.key + '\\}', 'g'), '[' + v.label + ']');
     }
   }
-
-  // PC/지원 안되는 브라우저: 클립보드 복사
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast('🔗 링크가 복사되었어요!');
-      return;
-    } catch (e) {}
-  }
-
-  // 구형 브라우저 fallback
-  const ta = document.createElement('textarea');
-  ta.value = url;
-  ta.style.position = 'fixed';
-  ta.style.left = '-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand('copy');
-    showToast('🔗 링크가 복사되었어요!');
-  } catch (e) {
-    showToast('복사 실패', true);
-  }
-  document.body.removeChild(ta);
+  return narr;
 }
 
-// ============================================================
-// 복사 (퇴원기록지 본문)
-// ============================================================
-function copyText() {
-  const text = buildText();
-  if (!text) {
-    showToast('진단을 먼저 선택하세요', true);
-    return;
-  }
-  copyToClipboard(text, '✓ 전체 복사되었습니다');
+// 치료과정: 검사 + 처치 + 진료경과 + 처방
+function buildTreatment(d) {
+  const tests = d.tests.map(t => t.split(':')[0].trim()).join(', ');
+  const decisions = d.decisions.slice(0, 3).join(', ');
+  const narrative = simplifyNarrative(d);
+  const rx = d.rx.map((r, i) => (i + 1) + '. ' + r).join('\n');
+  return [
+    '▷ 시행한 검사',
+    tests + ' 결과 진단에 합당한 소견 확인, 외과적 응급 질환 등 위험 소견 없음.',
+    '',
+    '▷ 응급실 처치',
+    decisions + ' 시행.',
+    '',
+    '▷ 진료 경과',
+    narrative,
+    '',
+    '▷ 퇴원 처방',
+    rx
+  ].join('\n');
 }
 
-function showToast(msg, isError) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  if (isError) {
-    t.style.background = 'var(--red)';
-    t.style.color = '#fff';
-    t.style.boxShadow = '0 8px 24px rgba(255, 77, 106, 0.3)';
-  } else {
-    t.style.background = 'var(--green)';
-    t.style.color = '#042918';
-    t.style.boxShadow = '0 8px 24px rgba(0, 217, 126, 0.3)';
-  }
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+// 추후계획: 추후 진료 + 재내원 주의사항
+function buildFollowup(d) {
+  const warns = d.warn.map(w => '- ' + w).join('\n');
+  return [
+    '▷ 추후 진료 계획',
+    d.fu,
+    '',
+    '▷ 재내원 주의사항 안내 (환자/보호자 교육 시행)',
+    '환자 및 보호자에게 아래 증상 발생 시 즉시 응급실 재내원 또는 119 연락하도록 설명, 충분히 이해하였음을 확인함.',
+    warns,
+    '※ 위에 명시되지 않은 증상이라도 변화/새로운 증상 발생 시 의료기관 방문이 필요함을 함께 설명함.'
+  ].join('\n');
 }
 
-// ============================================================
-// 유틸
-// ============================================================
-
-// 처치 칩 항목들을 자연어로 연결 ("A 및 B" / "A, B, C" 형태)
-function formatTxList() {
-  const items = [...state.decisions, ...state.customDecisions];
-  if (items.length === 0) return '대증 치료';
-  if (items.length === 1) return items[0];
-  if (items.length === 2) return items.join(' 및 ');
-  return items.slice(0, -1).join(', ') + ' 및 ' + items[items.length - 1];
-}
-
-// 퇴원 시 환자상태 옵션: 공통 + 카테고리별
-function getDischargeStatusOptions() {
+// 퇴원 시 환자상태 (카테고리별 적절한 항목)
+function buildStatus(catKey) {
   const common = [
     '활력징후 안정 (V/S stable)',
     '의식 명료, 의사소통 가능',
@@ -1821,69 +1317,218 @@ function getDischargeStatusOptions() {
     '환자 및 보호자에게 추후 진료 계획 설명, 이해 확인'
   ];
   const byCategory = {
-    resp: ['SpO2 정상 (실내 ≥95%)', '호흡곤란 호소 없음', '발열 없음'],
-    gi: ['경구 식이/수분 섭취 가능 확인', '탈수 소견 없음', '복통 호전'],
+    resp: ['SpO₂ 정상 (실내 ≥95%)', '호흡곤란 호소 없음', '발열 없음'],
+    gi: ['경구 식이/수분 섭취 가능', '탈수 소견 없음', '복통 호전'],
     trauma: ['손상 부위 활동 출혈 없음', '신경학적 평가 정상 (motor/sensory)', '원위부 순환 정상', '드레싱/부목 적용 상태 양호'],
-    neuro: ['신경학적 진찰 정상', '의식 변화 없음', '두통 호전'],
+    neuro: ['신경학적 진찰 정상', '두통 호전', '의식 변화 없음'],
     msk: ['신경학적 평가 정상 (motor/sensory)', '체중 부하 또는 운동 가능'],
-    gu: ['발열 없음', '배뇨 가능, 수분 섭취 권장 안내'],
+    gu: ['발열 없음', '배뇨 가능, 수분 섭취 권장'],
     skin: ['호흡곤란/혈관부종 없음', '발진/소양감 호전'],
-    cv: ['ECG 정상, 부정맥 없음', '흉통 없음 또는 호전', '심전도 모니터링 동안 이상 소견 없음']
+    cv: ['ECG 정상, 부정맥 없음', '흉통 없음 또는 호전']
   };
-  return [...common, ...(byCategory[state.category] || [])];
+  const items = common.concat(byCategory[catKey] || []);
+  return items.map(s => '- ' + s).join('\n');
 }
 
-// 검사 칩에서 콜론 앞부분만 추출 ("CBC, CRP: WNL" → "CBC, CRP")
-function formatTestList() {
-  const items = [...state.tests, ...state.customTests];
-  const shortened = items.map(t => {
-    const idx = t.indexOf(':');
-    return idx > 0 ? t.substring(0, idx).trim() : t;
-  });
-  if (shortened.length === 0) return '신체검진 및 응급실 평가';
-  if (shortened.length === 1) return shortened[0];
-  if (shortened.length === 2) return shortened.join(' 및 ');
-  return shortened.slice(0, -1).join(', ') + ' 및 ' + shortened[shortened.length - 1];
+// ──────────────────────────────────────────────
+// 렌더링
+// ──────────────────────────────────────────────
+function renderCats() {
+  document.getElementById('cats').innerHTML = Object.entries(DATA).map(function(entry) {
+    const key = entry[0], cat = entry[1];
+    return '<button class="cat c-' + key + ' ' + (state.category === key ? 'active' : '') + '" onclick="selectCat(\'' + key + '\')">' + cat.name + '</button>';
+  }).join('');
 }
 
-function fillNarrative(template, vars, disease) {
-  if (!template) return '';
-  return template.replace(/\{(\w+)\}/g, (match, key) => {
-    // 특수 매크로: 칩 선택에 따라 동적
-    if (key === 'tx') return formatTxList();
-    if (key === 'tests') return formatTestList();
-    // 사용자가 선택한 변수
-    if (vars && vars[key]) return vars[key];
-    // 변수 정의는 있지만 미선택 시 [라벨] 표시
-    const v = disease && disease.vars ? disease.vars.find(x => x.key === key) : null;
-    return v ? '[' + v.label + ']' : match;
-  });
+function renderDiseases() {
+  const el = document.getElementById('diseases');
+  if (!state.category) {
+    el.innerHTML = '<div class="empty"><div class="e-icon">↑</div>먼저 대분류를 선택하세요</div>';
+    return;
+  }
+  el.innerHTML = DATA[state.category].diseases.map(function(d) {
+    return '<button class="disease ' + (state.disease === d.id ? 'active' : '') + '" onclick="selectDisease(\'' + d.id + '\')">' +
+      '<div class="dko">' + d.ko + '</div>' +
+      '<div class="den">' + (d.en.length > 36 ? d.en.slice(0, 34) + '…' : d.en) + ' · ' + d.icd + '</div>' +
+    '</button>';
+  }).join('');
 }
 
-function selectVar(key, value) {
-  state.vars[key] = value;
-  const d = DATA[state.category].diseases.find(x => x.id === state.disease);
-  state.narrative = fillNarrative(d.narrative, state.vars, d);
-  state.narrativeEdited = false;
+function renderForm() {
+  const el = document.getElementById('form-area');
+  if (!state.disease) {
+    el.innerHTML = '<div class="empty" style="margin-top:40px;"><div class="e-icon">📋</div>진단을 선택하면<br>퇴원기록지가 자동으로 채워져요</div>';
+    return;
+  }
+  const d = DATA[state.category].diseases.find(function(x) { return x.id === state.disease; });
+  el.innerHTML =
+    '<div class="dx-card">' +
+      '<div class="dx-ko">' + d.ko + '<span class="dx-icd">' + d.icd + '</span></div>' +
+      '<div class="dx-en">' + d.en + '</div>' +
+    '</div>' +
+    '<div class="section s-tx">' +
+      '<div class="section-head">' +
+        '<div class="section-title">🩺 치료과정</div>' +
+        '<button class="copy-btn" onclick="copySection(\'treatment\')">📋 복사</button>' +
+      '</div>' +
+      '<textarea oninput="state.treatment=this.value">' + escHtml(state.treatment) + '</textarea>' +
+    '</div>' +
+    '<div class="section s-fu">' +
+      '<div class="section-head">' +
+        '<div class="section-title">📅 추후계획</div>' +
+        '<button class="copy-btn" onclick="copySection(\'followup\')">📋 복사</button>' +
+      '</div>' +
+      '<textarea oninput="state.followup=this.value">' + escHtml(state.followup) + '</textarea>' +
+    '</div>' +
+    '<div class="section s-st">' +
+      '<div class="section-head">' +
+        '<div class="section-title">✨ 퇴원 시 환자상태</div>' +
+        '<button class="copy-btn" onclick="copySection(\'status\')">📋 복사</button>' +
+      '</div>' +
+      '<textarea oninput="state.status=this.value">' + escHtml(state.status) + '</textarea>' +
+    '</div>';
+}
+
+// ──────────────────────────────────────────────
+// 이벤트
+// ──────────────────────────────────────────────
+function selectCat(key) {
+  state.category = key;
+  state.disease = null;
+  state.treatment = '';
+  state.followup = '';
+  state.status = '';
+  renderCats();
+  renderDiseases();
   renderForm();
 }
 
-function escAttr(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function selectDisease(id) {
+  state.disease = id;
+  const d = DATA[state.category].diseases.find(function(x) { return x.id === id; });
+  // 3섹션 자동 채움
+  state.treatment = buildTreatment(d);
+  state.followup = buildFollowup(d);
+  state.status = buildStatus(state.category);
+  renderDiseases();
+  renderForm();
 }
+
+function resetAll() {
+  if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
+  state.category = null;
+  state.disease = null;
+  state.treatment = '';
+  state.followup = '';
+  state.status = '';
+  renderCats();
+  renderDiseases();
+  renderForm();
+}
+
+// ──────────────────────────────────────────────
+// 복사
+// ──────────────────────────────────────────────
+function copySection(which) {
+  const text = state[which];
+  if (!text || !text.trim()) {
+    showToast('내용이 없습니다', true);
+    return;
+  }
+  const labels = { treatment: '치료과정', followup: '추후계획', status: '퇴원 시 환자상태' };
+  copyToClipboard(text, '✓ ' + labels[which] + ' 복사 완료');
+}
+
+function copyAll() {
+  if (!state.disease) {
+    showToast('진단을 먼저 선택하세요', true);
+    return;
+  }
+  const d = DATA[state.category].diseases.find(function(x) { return x.id === state.disease; });
+  const text = [
+    '[퇴원진단] ' + d.ko + ' (' + d.en + ', ' + d.icd + ')',
+    '',
+    '■ 치료과정',
+    state.treatment,
+    '',
+    '■ 추후계획',
+    state.followup,
+    '',
+    '■ 퇴원 시 환자상태',
+    state.status
+  ].join('\n');
+  copyToClipboard(text, '✓ 전체 복사 완료');
+}
+
+function copyToClipboard(text, msg) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() { showToast(msg); });
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast(msg);
+}
+
+// ──────────────────────────────────────────────
+// 공유
+// ──────────────────────────────────────────────
+async function shareApp() {
+  const url = window.location.href;
+  const data = { title: '퇴원기록지 도우미', text: '응급실 퇴원기록지 빠른 작성 도구 🩺💗', url: url };
+  if (navigator.share) {
+    try { await navigator.share(data); return; } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try { await navigator.clipboard.writeText(url); showToast('🔗 링크가 복사되었어요!'); return; } catch (e) {}
+  }
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast('🔗 링크가 복사되었어요!');
+}
+
+// ──────────────────────────────────────────────
+// 유틸
+// ──────────────────────────────────────────────
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  if (isError) {
+    t.style.background = 'linear-gradient(135deg, var(--red), #e26475)';
+    t.style.color = '#fff';
+    t.style.boxShadow = '0 8px 24px rgba(255, 126, 138, 0.35)';
+  } else {
+    t.style.background = 'linear-gradient(135deg, var(--mint), #5fd4b0)';
+    t.style.color = '#0d3528';
+    t.style.boxShadow = '0 8px 24px rgba(126, 232, 201, 0.35)';
+  }
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 1800);
+}
+
 function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
 function updateTime() {
   const now = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  document.getElementById('time-now').textContent =
-    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const p = function(n) { return String(n).padStart(2, '0'); };
+  document.getElementById('time-now').textContent = now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate()) + ' ' + p(now.getHours()) + ':' + p(now.getMinutes());
 }
 
-// ============================================================
+// ──────────────────────────────────────────────
 // 초기화
-// ============================================================
+// ──────────────────────────────────────────────
 renderCats();
 renderDiseases();
 renderForm();
